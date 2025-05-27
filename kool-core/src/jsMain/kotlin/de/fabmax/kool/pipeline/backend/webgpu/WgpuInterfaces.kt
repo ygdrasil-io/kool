@@ -33,14 +33,12 @@ external object GPUMapMode {
 
 external object GPUBufferUsage {
     val MAP_READ: Int
-    val MAP_WRITE: Int
     val COPY_SRC: Int
     val COPY_DST: Int
     val INDEX: Int
     val VERTEX: Int
     val UNIFORM: Int
     val STORAGE: Int
-    val INDIRECT: Int
     val QUERY_RESOLVE: Int
 }
 
@@ -58,7 +56,6 @@ external class GPUCommandEncoder {
     fun copyBufferToBuffer(source: WGPUBuffer, sourceOffset: Long, destination: WGPUBuffer, destinationOffset: Long, size: Long)
     fun copyTextureToBuffer(source: GPUImageCopyTexture, destination: GPUImageCopyBuffer, copySize: IntArray)
     fun copyTextureToTexture(source: GPUImageCopyTexture, destination: GPUImageCopyTexture, copySize: IntArray)
-    //fun writeTimestamp(querySet: GPUQuerySet, queryIndex: Int)
     fun resolveQuerySet(querySet: GPUQuerySet, firstQuery: Int, queryCount: Int, destination: WGPUBuffer, destinationOffset: Long)
     fun finish(): GPUCommandBuffer
 }
@@ -115,7 +112,6 @@ external class GPURenderPassEncoder {
     fun drawIndexed(indexCount: Int, instanceCount: Int = definedExternally, firstIndex: Int = definedExternally, baseVertex: Int = definedExternally, firstInstance: Int = definedExternally)
     fun setBindGroup(index: Int, bindGroup: GPUBindGroup, dynamicOffsets: Array<Int> = definedExternally)
     fun setViewport(x: Float, y: Float, width: Float, height: Float, minDepth: Float, maxDepth: Float)
-    fun setScissorRect(x: Int, y: Int, width: Int, height: Int)
     fun end()
 }
 
@@ -190,7 +186,6 @@ external class GPUTexture {
 }
 
 external object GPUTextureUsage {
-    val COPY_DST: Int
     val TEXTURE_BINDING: Int
     val RENDER_ATTACHMENT: Int
 }
