@@ -3,11 +3,14 @@ package de.fabmax.kool.pipeline.backend.webgpu
 import de.fabmax.kool.pipeline.GpuBufferImpl
 import de.fabmax.kool.pipeline.backend.stats.BufferInfo
 import de.fabmax.kool.util.*
+import io.ygdrasil.webgpu.GPUBuffer
 import io.ygdrasil.webgpu.WGPUBuffer
 
-class GpuBufferWgpu(val buffer: WGPUBuffer, size: Long, info: String?) :
+class GpuBufferWgpu2(buffer: GPUBuffer, size: Long, info: String?) :
     BaseReleasable(), GpuBufferImpl
 {
+
+    val buffer: WGPUBuffer = (buffer as io.ygdrasil.webgpu.Buffer).handler
 
     private val bufferInfo = BufferInfo(buffer.label, info ?: "<none>").apply {
         allocated(size)
@@ -30,7 +33,7 @@ internal class WgpuGrowingBuffer(
 
     var size: Long = size
         private set
-    var buffer: GpuBufferWgpu = makeBuffer(size)
+    var buffer: GpuBufferWgpu2 = makeBuffer(size)
         private set
 
     fun writeData(data: Float32Buffer) {

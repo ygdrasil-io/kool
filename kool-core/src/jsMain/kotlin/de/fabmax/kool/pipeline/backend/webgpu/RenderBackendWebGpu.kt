@@ -325,7 +325,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
 
     private fun copyReadbacks(encoder: GPUCommandEncoder) {
         gpuReadbacks.filterIsInstance<ReadbackStorageBuffer>().forEach { readback ->
-            val gpuBuf = readback.storage.gpuBuffer as GpuBufferWgpu?
+            val gpuBuf = readback.storage.gpuBuffer as GpuBufferWgpu2?
             if (gpuBuf == null) {
                 readback.deferred.completeExceptionally(IllegalStateException("Failed reading buffer"))
             } else {
@@ -413,8 +413,8 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
     }
 
-    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
-        return GpuBufferWgpu(device.createBuffer(descriptor), descriptor.size, info)
+    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu2 {
+        return GpuBufferWgpu2(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
     }
 
     fun createTexture(descriptor: GPUTextureDescriptor): WgpuTextureResource {
