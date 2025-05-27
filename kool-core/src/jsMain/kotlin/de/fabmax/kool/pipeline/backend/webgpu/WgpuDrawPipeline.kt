@@ -84,15 +84,15 @@ class WgpuDrawPipeline(
         val blendMode = when (drawPipeline.pipelineConfig.blendMode) {
             BlendMode.DISABLED -> null
             BlendMode.BLEND_ADDITIVE -> GPUBlendState(
-                color = GPUBlendComponent(srcFactor = GPUBlendFactor.one, dstFactor = GPUBlendFactor.one),
+                color = GPUBlendComponent(srcFactor = GPUBlendFactor.one.enumValue, dstFactor = GPUBlendFactor.one.enumValue),
                 alpha = GPUBlendComponent(),
             )
             BlendMode.BLEND_MULTIPLY_ALPHA -> GPUBlendState(
-                color = GPUBlendComponent(srcFactor = GPUBlendFactor.srcAlpha, dstFactor = GPUBlendFactor.oneMinusSrcAlpha),
+                color = GPUBlendComponent(srcFactor = GPUBlendFactor.srcAlpha.enumValue, dstFactor = GPUBlendFactor.oneMinusSrcAlpha.enumValue),
                 alpha = GPUBlendComponent(),
             )
             BlendMode.BLEND_PREMULTIPLIED_ALPHA -> GPUBlendState(
-                color = GPUBlendComponent(srcFactor = GPUBlendFactor.one, dstFactor = GPUBlendFactor.oneMinusSrcAlpha),
+                color = GPUBlendComponent(srcFactor = GPUBlendFactor.one.enumValue, dstFactor = GPUBlendFactor.oneMinusSrcAlpha.enumValue),
                 alpha = GPUBlendComponent(),
             )
         }

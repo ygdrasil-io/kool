@@ -117,11 +117,11 @@ class GPUBlendState(
 
 class GPUBlendComponent(
     @JsName("operation")
-    val operation: GPUBlendOperation = GPUBlendOperation.add,
+    val operation: String = GPUBlendOperation.add.enumValue,
     @JsName("srcFactor")
-    val srcFactor: GPUBlendFactor = GPUBlendFactor.one,
+    val srcFactor: String = GPUBlendFactor.one.enumValue,
     @JsName("dstFactor")
-    val dstFactor: GPUBlendFactor = GPUBlendFactor.zero
+    val dstFactor: String = GPUBlendFactor.zero.enumValue
 )
 
 class GPUBufferBinding(
@@ -150,8 +150,8 @@ fun GPUCanvasConfiguration(
     device: GPUDevice,
     format: GPUTextureFormat,
     usage: Int? = null,
-    colorSpace: GPUPredefinedColorSpace? = null,
-    alphaMode: GPUCanvasAlphaMode? = null
+    colorSpace: String? = null,
+    alphaMode: String? = null
 ): GPUCanvasConfiguration {
     val o = js("({})")
     o["device"] = device
