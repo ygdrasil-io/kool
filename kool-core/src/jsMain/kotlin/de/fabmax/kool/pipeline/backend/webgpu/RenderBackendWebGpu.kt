@@ -23,6 +23,7 @@ import de.fabmax.kool.platform.navigator
 import de.fabmax.kool.scene.Scene
 import de.fabmax.kool.util.*
 import io.ygdrasil.webgpu.WGPUBuffer
+import io.ygdrasil.webgpu.toFlagInt
 import kotlinx.browser.window
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -279,10 +280,11 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     }
 
     override fun initStorageTexture(storageTexture: StorageTexture, width: Int, height: Int, depth: Int) {
-        val usage = GPUTextureUsage.STORAGE_BINDING or
-                GPUTextureUsage.COPY_SRC or
-                GPUTextureUsage.COPY_DST or
-                GPUTextureUsage.TEXTURE_BINDING
+        val usage = setOf(
+            io.ygdrasil.webgpu.GPUTextureUsage.StorageBinding,
+            io.ygdrasil.webgpu.GPUTextureUsage.CopySrc,
+            io.ygdrasil.webgpu.GPUTextureUsage.CopyDst,
+            io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding)
         val dimension = when (storageTexture) {
             is StorageTexture1d -> GPUTextureDimension.texture1d
             is StorageTexture2d -> GPUTextureDimension.texture2d
@@ -304,9 +306,9 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = storageTexture.format.wgpuStorage.name,
+            format = storageTexture.format.wgpuStorage.value,
             dimension = dimension,
-            usage = usage,
+            usage = usage.toFlagInt(),
             mipLevelCount = levels,
             label = storageTexture.name
         )

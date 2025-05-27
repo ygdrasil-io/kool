@@ -190,10 +190,8 @@ external class GPUTexture {
 }
 
 external object GPUTextureUsage {
-    val COPY_SRC: Int
     val COPY_DST: Int
     val TEXTURE_BINDING: Int
-    val STORAGE_BINDING: Int
     val RENDER_ATTACHMENT: Int
 }
 

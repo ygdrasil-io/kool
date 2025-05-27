@@ -9,6 +9,7 @@ import de.fabmax.kool.util.Float32BufferImpl
 import de.fabmax.kool.util.Uint16BufferImpl
 import de.fabmax.kool.util.Uint8BufferImpl
 import de.fabmax.kool.util.logW
+import io.ygdrasil.webgpu.toFlagInt
 import org.khronos.webgl.ArrayBufferView
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
@@ -103,12 +104,12 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
     }
 
     private fun loadTextureCube(tex: TextureCube, data: ImageDataCube): WgpuTextureResource {
-        val usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT
+        val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = intArrayOf(data.width, data.height, 6),
             format = data.format.wgpu.enumValue,
-            usage = usage,
+            usage = usage.toFlagInt(),
             mipLevelCount = levels
         )
 
@@ -121,13 +122,13 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
     }
 
     private fun loadTexture2dArray(tex: Texture2dArray, data: ImageData3d): WgpuTextureResource {
+        val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val size = intArrayOf(data.width, data.height, data.depth)
-        val usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = size,
             format = data.format.wgpu.enumValue,
-            usage = usage,
+            usage = usage.toFlagInt(),
             mipLevelCount = levels
         )
 
@@ -140,12 +141,12 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
     }
 
     private fun loadTextureCubeArray(tex: TextureCubeArray, data: ImageDataCubeArray): WgpuTextureResource {
-        val usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT
+        val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = intArrayOf(data.width, data.height, 6 * data.slices),
             format = data.format.wgpu.enumValue,
-            usage = usage,
+            usage = usage.toFlagInt(),
             mipLevelCount = levels
         )
 

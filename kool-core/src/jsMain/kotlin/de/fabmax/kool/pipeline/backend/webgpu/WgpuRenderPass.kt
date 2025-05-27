@@ -4,6 +4,7 @@ import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.releaseWith
+import io.ygdrasil.webgpu.toFlagInt
 import kotlin.time.Duration.Companion.nanoseconds
 
 abstract class WgpuRenderPass(
@@ -208,10 +209,12 @@ abstract class WgpuRenderPass(
         }
 
         private fun createImage(width: Int, height: Int, samples: Int, format: GPUTextureFormat): WgpuTextureResource {
-            val copySrcUsage = if (isCopySrc) GPUTextureUsage.COPY_SRC else 0
-            val usage = GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT or copySrcUsage
+            val usage = when (isCopySrc) {
+                true -> setOf(io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment, io.ygdrasil.webgpu.GPUTextureUsage.CopySrc)
+                else -> setOf(io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
+            }
 
-            return createImageWithUsage(width, height, samples, format, usage)
+            return createImageWithUsage(width, height, samples, format, usage.toFlagInt())
         }
 
         private fun createImageWithUsage(width: Int, height: Int, samples: Int, format: GPUTextureFormat, usage: Int): WgpuTextureResource {
