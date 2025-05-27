@@ -61,7 +61,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     val canvasFormat: GPUTextureFormat
         get() = _canvasFormat!!
 
-    internal lateinit var textureLoader: WgpuTextureLoader
+    internal lateinit var textureLoader: WgpuTextureLoader2
         private set
 
     var isTimestampQuerySupported = false
@@ -138,7 +138,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         canvasContext.configure(
             GPUCanvasConfiguration(oldDevice, canvasFormat)
         )
-        textureLoader = WgpuTextureLoader(this)
+        textureLoader = WgpuTextureLoader2(this)
         logI { "WebGPU context created" }
 
         window.requestAnimationFrame { t ->

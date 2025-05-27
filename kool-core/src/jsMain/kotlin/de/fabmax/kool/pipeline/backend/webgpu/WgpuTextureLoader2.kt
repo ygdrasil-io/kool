@@ -5,6 +5,7 @@ import de.fabmax.kool.math.numMipLevels
 import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.wgpu.GPUBackend
+import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureLoader
 import de.fabmax.kool.platform.ImageTextureData
 import de.fabmax.kool.util.Float32BufferImpl
 import de.fabmax.kool.util.Uint16BufferImpl
@@ -18,12 +19,17 @@ import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
 
-internal class WgpuTextureLoader(val backend: GPUBackend) {
+
+//internal typealias WgpuTextureLoader2 = WgpuTextureLoader
+
+internal class WgpuTextureLoader2(val backend: GPUBackend) {
+    val loader = WgpuTextureLoader(backend)
     private val loadedTextures = mutableMapOf<String, OldWgpuTextureResource>()
 
     private val device: GPUDevice get() = (backend.device as Device).handler.asDynamic()
     private val multiSampledDepthTextureCopy = MultiSampledDepthTextureCopy()
-    val mipmapGenerator = MipmapGenerator()
+    val mipmapGenerator = loader.mipmapGenerator
+    val oldMipmapGenerator = MipmapGenerator()
 
     fun loadTexture(tex: Texture<*>) {
         val data = checkNotNull(tex.uploadData)
@@ -82,7 +88,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         val gpuTex = backend.createTexture(texDesc)
         copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
+            oldMipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
@@ -119,7 +125,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         val gpuTex = backend.createTexture(texDesc)
         copyTextureData(data, gpuTex.oldGpuTexture, intArrayOf(data.width, data.height))
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
+            oldMipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
@@ -138,7 +144,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         val gpuTex = backend.createTexture(texDesc)
         copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
+            oldMipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
@@ -156,7 +162,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         val gpuTex = backend.createTexture(texDesc)
         copyTextureData(data, gpuTex.oldGpuTexture, intArrayOf(data.width, data.height))
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
+            oldMipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
@@ -468,3 +474,4 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         }
     }
 }
+

@@ -3,6 +3,7 @@ package de.fabmax.kool.pipeline.backend.webgpu
 import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.util.logD
 import de.fabmax.kool.util.logT
+import io.ygdrasil.webgpu.CommandEncoder
 
 class WgpuOffscreenPassCube(
     val parentPass: OffscreenPassCube,
@@ -74,7 +75,9 @@ class WgpuOffscreenPassCube(
     override fun generateMipLevels(encoder: GPUCommandEncoder) {
         for (i in attachments.colorImages.indices) {
             val image = attachments.colorImages[i]
-            backend.textureLoader.mipmapGenerator.generateMipLevels(image.oldImageInfo, image.oldGpuTexture, encoder)
+            backend.textureLoader.mipmapGenerator.generateMipLevels(image.imageInfo, image.gpuTexture,
+                CommandEncoder(encoder.asDynamic())
+            )
         }
     }
 
