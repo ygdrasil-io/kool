@@ -4,11 +4,13 @@ import de.fabmax.kool.math.float32ToFloat16
 import de.fabmax.kool.math.numMipLevels
 import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.gl.pxSize
+import de.fabmax.kool.pipeline.backend.wgpu.GPUBackend
 import de.fabmax.kool.platform.ImageTextureData
 import de.fabmax.kool.util.Float32BufferImpl
 import de.fabmax.kool.util.Uint16BufferImpl
 import de.fabmax.kool.util.Uint8BufferImpl
 import de.fabmax.kool.util.logW
+import io.ygdrasil.webgpu.Device
 import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.TextureDescriptor
 import org.khronos.webgl.ArrayBufferView
@@ -16,10 +18,10 @@ import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
 
-internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
+internal class WgpuTextureLoader(val backend: GPUBackend) {
     private val loadedTextures = mutableMapOf<String, OldWgpuTextureResource>()
 
-    private val device: GPUDevice get() = backend.oldDevice
+    private val device: GPUDevice get() = (backend.device as Device).handler.asDynamic()
     private val multiSampledDepthTextureCopy = MultiSampledDepthTextureCopy()
     val mipmapGenerator = MipmapGenerator()
 
