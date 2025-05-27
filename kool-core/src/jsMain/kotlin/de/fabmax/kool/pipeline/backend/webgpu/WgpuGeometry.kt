@@ -1,6 +1,7 @@
 package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.pipeline.backend.GpuGeometry
+import de.fabmax.kool.pipeline.backend.wgpu.WgpuGrowingBuffer
 import de.fabmax.kool.scene.Mesh
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.checkIsNotReleased
@@ -21,7 +22,7 @@ class WgpuGeometry(val mesh: Mesh, val backend: RenderBackendWebGpu) : BaseRelea
 
     init {
         val geom = mesh.geometry
-        createdIndexBuffer = WgpuGrowingBuffer(backend, "${mesh.name} index data", 4L * geom.numIndices, GPUBufferUsage.INDEX or GPUBufferUsage.COPY_DST)
+        createdIndexBuffer = WgpuGrowingBuffer(backend, "${mesh.name} index data", 4L * geom.numIndices, setOf(io.ygdrasil.webgpu.GPUBufferUsage.Index, io.ygdrasil.webgpu.GPUBufferUsage.CopyDst))
         createdFloatBuffer = if (geom.byteStrideF == 0) null else {
             WgpuGrowingBuffer(backend, "${mesh.name} vertex float data", geom.byteStrideF * geom.numVertices.toLong())
         }

@@ -425,8 +425,8 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
     }
 
-    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
-        return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(oldDevice.createBuffer(descriptor)), descriptor.size, info)
+    override fun createBuffer(descriptor: io.ygdrasil.webgpu.GPUBufferDescriptor, info: String?): GpuBufferWgpu {
+        return GpuBufferWgpu(device.createBuffer(descriptor), descriptor.size.toLong(), info)
     }
 
     override fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): WgpuTextureResource {

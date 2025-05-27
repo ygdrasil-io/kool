@@ -425,7 +425,7 @@ class WgpuRenderBackend(
         gpuReadbacks.clear()
     }
 
-    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
+    override fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
         return GpuBufferWgpu(device.createBuffer(descriptor), descriptor.size.toLong(), info)
     }
 

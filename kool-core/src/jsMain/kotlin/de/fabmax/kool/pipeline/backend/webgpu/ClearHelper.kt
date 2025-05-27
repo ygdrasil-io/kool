@@ -6,6 +6,7 @@ import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
 import de.fabmax.kool.util.Color
 import de.fabmax.kool.util.Float32Buffer
 import de.fabmax.kool.util.Float32BufferImpl
+import io.ygdrasil.webgpu.BufferDescriptor
 
 class ClearHelper(val backend: RenderBackendWebGpu) {
     private val clearPipelines = mutableMapOf<WgpuRenderPass, ClearPipeline>()
@@ -24,10 +25,10 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
         var prevDepth = 0f
 
         val clearValuesBuffer: GpuBufferWgpu = backend.createBuffer(
-            GPUBufferDescriptor(
+            BufferDescriptor(
                 label = "clearHelper-clearValues",
-                size = 32,
-                usage = GPUBufferUsage.UNIFORM or GPUBufferUsage.COPY_DST
+                size = 32u,
+                usage = setOf(io.ygdrasil.webgpu.GPUBufferUsage.Uniform, io.ygdrasil.webgpu.GPUBufferUsage.CopyDst)
             ),
             "clearHelper-clearValues"
         )

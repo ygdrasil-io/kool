@@ -8,6 +8,8 @@ import de.fabmax.kool.pipeline.backend.GpuBindGroupData
 import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
 import de.fabmax.kool.pipeline.backend.wgsl.WgslLocations
 import de.fabmax.kool.util.*
+import io.ygdrasil.webgpu.BufferDescriptor
+import kotlin.collections.setOf
 
 class WgpuBindGroupData(
     private val data: BindGroupData,
@@ -116,10 +118,10 @@ class WgpuBindGroupData(
         val location = locations[layout]
         val struct = buffer.struct
         val gpuBuffer = backend.createBuffer(
-            GPUBufferDescriptor(
+            BufferDescriptor(
                 label = "bindGroup[${data.layout.scope}]-ubo-${name}",
-                size = struct.structSize.toLong(),
-                usage = GPUBufferUsage.UNIFORM or GPUBufferUsage.COPY_DST
+                size = struct.structSize.toULong(),
+                usage = setOf(io.ygdrasil.webgpu.GPUBufferUsage.Uniform, io.ygdrasil.webgpu.GPUBufferUsage.CopyDst)
             ),
             "scene: ${pass.parentScene?.name}, render-pass: ${pass.name}"
         )
@@ -133,10 +135,10 @@ class WgpuBindGroupData(
         var gpuBuffer = storage.gpuBuffer as GpuBufferWgpu?
         if (gpuBuffer == null) {
             gpuBuffer = backend.createBuffer(
-                GPUBufferDescriptor(
+                BufferDescriptor(
                     label = "bindGroup[${data.layout.scope}]-storage-${name}",
-                    size = storage.size * storage.type.byteSize.toLong(),
-                    usage = GPUBufferUsage.STORAGE or GPUBufferUsage.COPY_SRC or GPUBufferUsage.COPY_DST
+                    size = (storage.size * storage.type.byteSize).toULong(),
+                    usage = setOf(io.ygdrasil.webgpu.GPUBufferUsage.CopySrc, io.ygdrasil.webgpu.GPUBufferUsage.CopyDst)
                 ),
                 "scene: ${pass.parentScene?.name}, render-pass: ${pass.name}"
             )

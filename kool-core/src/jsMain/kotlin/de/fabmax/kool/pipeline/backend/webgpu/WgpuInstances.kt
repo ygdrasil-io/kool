@@ -1,6 +1,7 @@
 package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.pipeline.backend.GpuInstances
+import de.fabmax.kool.pipeline.backend.wgpu.WgpuGrowingBuffer
 import de.fabmax.kool.scene.Mesh
 import de.fabmax.kool.scene.MeshInstanceList
 import de.fabmax.kool.util.BaseReleasable

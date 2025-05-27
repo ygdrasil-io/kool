@@ -7,6 +7,7 @@ interface GPUBackend {
 
     val device: GPUDevice
 
+    fun createBuffer(descriptor: io.ygdrasil.webgpu.GPUBufferDescriptor, info: String?): GpuBufferWgpu
     fun createTexture(descriptor: GPUTextureDescriptor): WgpuTextureResource
 
 }
