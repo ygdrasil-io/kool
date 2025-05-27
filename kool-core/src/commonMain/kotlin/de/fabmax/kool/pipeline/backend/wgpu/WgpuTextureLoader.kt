@@ -36,8 +36,7 @@ import io.ygdrasil.webgpu.VertexState
 
 
 internal class WgpuTextureLoader(val backend: GPUBackend) {
-    // TODO: switch to private
-    internal val loadedTextures = mutableMapOf<String, WgpuTextureResource>()
+    private val loadedTextures = mutableMapOf<String, WgpuTextureResource>()
 
     private val device: GPUDevice get() = backend.device
     private val multiSampledDepthTextureCopy = MultiSampledDepthTextureCopy()
@@ -67,8 +66,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         tex.gpuTexture = loaded
     }
 
-    // TODO: switch to private
-    internal fun loadTexture1d(tex: Texture1d, data: ImageData1d): WgpuTextureResource {
+    private fun loadTexture1d(tex: Texture1d, data: ImageData1d): WgpuTextureResource {
         val size = Extent3D(data.width.toUInt())
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding)
         if (tex.mipMapping.isMipMapped) {
@@ -87,8 +85,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         return gpuTex
     }
 
-    // TODO: switch to private
-    internal  fun loadTexture2d(tex: Texture2d, data: ImageData2d): WgpuTextureResource {
+    private fun loadTexture2d(tex: Texture2d, data: ImageData2d): WgpuTextureResource {
         val size = Extent3D(data.width.toUInt(), data.height.toUInt())
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding, GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
@@ -107,8 +104,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         return gpuTex
     }
 
-    // TODO: switch to private
-    internal  fun loadTexture3d(tex: Texture3d, data: ImageData3d): WgpuTextureResource {
+    private fun loadTexture3d(tex: Texture3d, data: ImageData3d): WgpuTextureResource {
         val size = Extent3D(data.width.toUInt(), data.height.toUInt(), data.depth.toUInt())
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding)
         if (tex.mipMapping.isMipMapped) {
@@ -127,8 +123,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         return gpuTex
     }
 
-    // TODO: switch to private
-    internal  fun loadTextureCube(tex: TextureCube, data: ImageDataCube): WgpuTextureResource {
+    private fun loadTextureCube(tex: TextureCube, data: ImageDataCube): WgpuTextureResource {
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding, GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = TextureDescriptor(
@@ -146,8 +141,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         return gpuTex
     }
 
-    // TODO: switch to private
-    internal  fun loadTexture2dArray(tex: Texture2dArray, data: ImageData3d): WgpuTextureResource {
+    private  fun loadTexture2dArray(tex: Texture2dArray, data: ImageData3d): WgpuTextureResource {
         val size = Extent3D(data.width.toUInt(), data.height.toUInt(), data.depth.toUInt())
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding, GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
@@ -166,8 +160,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         return gpuTex
     }
 
-    // TODO: switch to private
-    internal  fun loadTextureCubeArray(tex: TextureCubeArray, data: ImageDataCubeArray): WgpuTextureResource {
+    private  fun loadTextureCubeArray(tex: TextureCubeArray, data: ImageDataCubeArray): WgpuTextureResource {
         val usage = setOf(GPUTextureUsage.CopyDst, GPUTextureUsage.TextureBinding, GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = TextureDescriptor(
@@ -209,8 +202,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         MipMapping.Off -> 1u
     }
 
-    // TODO: switch to private
-    internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
+    private fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
         when (src) {
             is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
@@ -244,8 +236,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         }
     }
 
-    // TODO: switch to private
-    internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: GPUOrigin3D) {
+    private fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: GPUOrigin3D) {
         copyNativeTextureData(src, dst, size, dstOrigin, device)
     }
 
