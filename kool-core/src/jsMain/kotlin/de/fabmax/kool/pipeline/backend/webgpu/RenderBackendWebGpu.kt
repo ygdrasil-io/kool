@@ -17,6 +17,7 @@ import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
 import de.fabmax.kool.pipeline.backend.wgpu.GPUBackend
 import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
+import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureLoader
 import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureResource
 import de.fabmax.kool.pipeline.backend.wgpu.wgpuStorage
 import de.fabmax.kool.pipeline.backend.wgsl.WgslGenerator
@@ -61,7 +62,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     val canvasFormat: GPUTextureFormat
         get() = _canvasFormat!!
 
-    internal lateinit var textureLoader: WgpuTextureLoader2
+    internal lateinit var textureLoader: WgpuTextureLoader
         private set
 
     var isTimestampQuerySupported = false
@@ -138,7 +139,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         canvasContext.configure(
             GPUCanvasConfiguration(oldDevice, canvasFormat)
         )
-        textureLoader = WgpuTextureLoader2(this)
+        textureLoader = WgpuTextureLoader(this)
         logI { "WebGPU context created" }
 
         window.requestAnimationFrame { t ->
