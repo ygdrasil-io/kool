@@ -74,7 +74,7 @@ class WgpuOffscreenPassCube(
     override fun generateMipLevels(encoder: GPUCommandEncoder) {
         for (i in attachments.colorImages.indices) {
             val image = attachments.colorImages[i]
-            backend.textureLoader.mipmapGenerator.generateMipLevels(image.imageInfo, image.gpuTexture, encoder)
+            backend.textureLoader.mipmapGenerator.generateMipLevels(image.oldImageInfo, image.oldGpuTexture, encoder)
         }
     }
 
@@ -136,8 +136,8 @@ class WgpuOffscreenPassCube(
         super.endRenderPass(passEncoderState)
         attachments.resolveDepthImage?.let { copyDst ->
             backend.textureLoader.resolveMultiSampledDepthTexture(
-                src = attachments.depthImage!!.gpuTexture,
-                dst = copyDst.gpuTexture,
+                src = attachments.depthImage!!.oldGpuTexture,
+                dst = copyDst.oldGpuTexture,
                 mipLevel = passEncoderState.mipLevel,
                 layer = passEncoderState.layer,
                 encoder = passEncoderState.encoder

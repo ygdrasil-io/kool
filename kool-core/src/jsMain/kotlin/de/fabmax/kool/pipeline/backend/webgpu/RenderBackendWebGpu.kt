@@ -26,7 +26,6 @@ import io.ygdrasil.webgpu.Device
 import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.TextureDescriptor
 import io.ygdrasil.webgpu.WGPUBuffer
-import io.ygdrasil.webgpu.toFlagInt
 import kotlinx.browser.window
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -349,7 +348,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
 
         gpuReadbacks.filterIsInstance<ReadbackTexture>().forEach { readback ->
-            val gpuTex = readback.texture.gpuTexture as WgpuTextureResource?
+            val gpuTex = readback.texture.gpuTexture as OldWgpuTextureResource?
             if (gpuTex == null || readback.texture.format.isF16) {
                 readback.deferred.completeExceptionally(IllegalStateException("Failed reading texture"))
             } else {
@@ -363,7 +362,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
                     )
                 )
                 encoder.copyTextureToBuffer(
-                    source = GPUImageCopyTexture(gpuTex.gpuTexture),
+                    source = GPUImageCopyTexture(gpuTex.oldGpuTexture),
                     destination = GPUImageCopyBuffer(
                         buffer = mapBuffer,
                         bytesPerRow = format.pxSize * gpuTex.width,
@@ -390,7 +389,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         gpuReadbacks.filterIsInstance<ReadbackTexture>().filter { it.mapBuffer != null }.forEach { readback ->
             val mapBuffer = readback.mapBuffer!!
             mapBuffer.mapAsync(GPUMapMode.READ.asDynamic()).asDynamic().then {
-                val gpuTex = readback.texture.gpuTexture as WgpuTextureResource
+                val gpuTex = readback.texture.gpuTexture as OldWgpuTextureResource
                 val format = readback.texture.format
                 val dst = ImageData.createBuffer(format, gpuTex.width, gpuTex.height, gpuTex.depth)
                 dst.copyFrom(mapBuffer.getMappedRange())
@@ -423,8 +422,8 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
     }
 
-    fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): WgpuTextureResource {
-        return WgpuTextureResource(descriptor, Device(device.asDynamic(), null).createTexture(descriptor))
+    fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): OldWgpuTextureResource {
+        return OldWgpuTextureResource(descriptor, Device(device.asDynamic(), null).createTexture(descriptor))
     }
 
     private interface GpuReadback

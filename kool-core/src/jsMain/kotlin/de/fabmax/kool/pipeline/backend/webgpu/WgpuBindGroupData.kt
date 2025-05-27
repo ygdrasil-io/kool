@@ -149,7 +149,7 @@ class WgpuBindGroupData(
     private fun BindGroupData.Texture1dBindingData.makeTexture1dEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
 
         val sampler = device.createSampler(
@@ -161,14 +161,14 @@ class WgpuBindGroupData(
         textureBindings += TextureBinding(this, loadedTex)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
-            GPUBindGroupEntry(location.binding + 1, loadedTex.gpuTexture.createView(dimension = GPUTextureViewDimension.view1d))
+            GPUBindGroupEntry(location.binding + 1, loadedTex.oldGpuTexture.createView(dimension = GPUTextureViewDimension.view1d))
         )
     }
 
     private fun BindGroupData.Texture2dBindingData.makeTexture2dEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
         val maxAnisotropy = if (tex.mipMapping.isMipMapped &&
             samplerSettings.minFilter == FilterMethod.LINEAR &&
@@ -188,11 +188,11 @@ class WgpuBindGroupData(
 
         textureBindings += TextureBinding(this, loadedTex)
 
-        val baseLevel = samplerSettings.baseMipLevel.coerceAtMost(loadedTex.imageInfo.mipLevelCount - 1)
-        val numLevels = if (samplerSettings.numMipLevels > 0) samplerSettings.numMipLevels else loadedTex.imageInfo.mipLevelCount
-        val numLevelsSafe = numLevels.coerceAtMost(loadedTex.imageInfo.mipLevelCount - baseLevel)
+        val baseLevel = samplerSettings.baseMipLevel.coerceAtMost(loadedTex.oldImageInfo.mipLevelCount - 1)
+        val numLevels = if (samplerSettings.numMipLevels > 0) samplerSettings.numMipLevels else loadedTex.oldImageInfo.mipLevelCount
+        val numLevelsSafe = numLevels.coerceAtMost(loadedTex.oldImageInfo.mipLevelCount - baseLevel)
 
-        val texView = loadedTex.gpuTexture.createView(baseMipLevel = baseLevel, mipLevelCount = numLevelsSafe)
+        val texView = loadedTex.oldGpuTexture.createView(baseMipLevel = baseLevel, mipLevelCount = numLevelsSafe)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
             GPUBindGroupEntry(location.binding + 1, texView)
@@ -202,7 +202,7 @@ class WgpuBindGroupData(
     private fun BindGroupData.Texture3dBindingData.makeTexture3dEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
 
         val sampler = device.createSampler(
@@ -217,14 +217,14 @@ class WgpuBindGroupData(
         textureBindings += TextureBinding(this, loadedTex)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
-            GPUBindGroupEntry(location.binding + 1, loadedTex.gpuTexture.createView())
+            GPUBindGroupEntry(location.binding + 1, loadedTex.oldGpuTexture.createView())
         )
     }
 
     private fun BindGroupData.TextureCubeBindingData.makeTextureCubeEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
         val compare = if (layout.sampleType == TextureSampleType.DEPTH) samplerSettings.compareOp.wgpu else null
 
@@ -240,14 +240,14 @@ class WgpuBindGroupData(
         textureBindings += TextureBinding(this, loadedTex)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
-            GPUBindGroupEntry(location.binding + 1, loadedTex.gpuTexture.createView(dimension = GPUTextureViewDimension.viewCube))
+            GPUBindGroupEntry(location.binding + 1, loadedTex.oldGpuTexture.createView(dimension = GPUTextureViewDimension.viewCube))
         )
     }
 
     private fun BindGroupData.Texture2dArrayBindingData.makeTexture2dArrayEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
         val maxAnisotropy = if (tex.mipMapping.isMipMapped &&
             samplerSettings.minFilter == FilterMethod.LINEAR &&
@@ -268,14 +268,14 @@ class WgpuBindGroupData(
         textureBindings += TextureBinding(this, loadedTex)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
-            GPUBindGroupEntry(location.binding + 1, loadedTex.gpuTexture.createView(dimension = GPUTextureViewDimension.view2dArray))
+            GPUBindGroupEntry(location.binding + 1, loadedTex.oldGpuTexture.createView(dimension = GPUTextureViewDimension.view2dArray))
         )
     }
 
     private fun BindGroupData.TextureCubeArrayBindingData.makeTextureCubeArrayEntry(): List<GPUBindGroupEntry> {
         val location = locations[layout]
         val tex = checkNotNull(texture) { "Cannot create texture binding from null texture" }
-        val loadedTex = checkNotNull(tex.gpuTexture as WgpuTextureResource?) { "Cannot create texture binding from null texture" }
+        val loadedTex = checkNotNull(tex.gpuTexture as OldWgpuTextureResource?) { "Cannot create texture binding from null texture" }
         val samplerSettings = sampler ?: tex.samplerSettings
         val compare = if (layout.sampleType == TextureSampleType.DEPTH) samplerSettings.compareOp.wgpu else null
 
@@ -291,18 +291,18 @@ class WgpuBindGroupData(
         textureBindings += TextureBinding(this, loadedTex)
         return listOf(
             GPUBindGroupEntry(location.binding, sampler),
-            GPUBindGroupEntry(location.binding + 1, loadedTex.gpuTexture.createView(dimension = GPUTextureViewDimension.viewCubeArray))
+            GPUBindGroupEntry(location.binding + 1, loadedTex.oldGpuTexture.createView(dimension = GPUTextureViewDimension.viewCubeArray))
         )
     }
 
     private fun BindGroupData.StorageTextureBindingData<*>.makeStorageTextureEntry(): GPUBindGroupEntry {
         val location = locations[layout]
         val storageTex = checkNotNull(storageTexture) { "Cannot create storage texture binding from null texture" }
-        val loadedTex = checkNotNull(storageTex.asTexture.gpuTexture as WgpuTextureResource?) { "Cannot create storage texture binding from null texture" }
+        val loadedTex = checkNotNull(storageTex.asTexture.gpuTexture as OldWgpuTextureResource?) { "Cannot create storage texture binding from null texture" }
 
         storageTextureBindings += StorageTextureBinding(this, loadedTex)
-        val texView = loadedTex.gpuTexture.createView(
-            baseMipLevel = mipLevel.coerceAtMost(loadedTex.imageInfo.mipLevelCount - 1),
+        val texView = loadedTex.oldGpuTexture.createView(
+            baseMipLevel = mipLevel.coerceAtMost(loadedTex.oldImageInfo.mipLevelCount - 1),
             mipLevelCount = 1
         )
         return GPUBindGroupEntry(location.binding, texView)
@@ -331,11 +331,11 @@ class WgpuBindGroupData(
 
     private data class TextureBinding(
         val binding: BindGroupData.TextureBindingData<*>,
-        val loadedTex: WgpuTextureResource
+        val loadedTex: OldWgpuTextureResource
     )
 
     private data class StorageTextureBinding(
         val binding: BindGroupData.StorageTextureBindingData<*>,
-        val loadedTex: WgpuTextureResource
+        val loadedTex: OldWgpuTextureResource
     )
 }

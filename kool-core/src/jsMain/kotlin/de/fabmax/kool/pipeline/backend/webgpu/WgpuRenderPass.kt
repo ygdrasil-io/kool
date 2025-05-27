@@ -209,7 +209,7 @@ abstract class WgpuRenderPass(
             }
         }
 
-        private fun createImage(width: Int, height: Int, samples: Int, format: GPUTextureFormat): WgpuTextureResource {
+        private fun createImage(width: Int, height: Int, samples: Int, format: GPUTextureFormat): OldWgpuTextureResource {
             val usage = when (isCopySrc) {
                 true -> setOf(io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment, io.ygdrasil.webgpu.GPUTextureUsage.CopySrc)
                 else -> setOf(io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
@@ -218,7 +218,7 @@ abstract class WgpuRenderPass(
             return createImageWithUsage(width, height, samples, format, usage)
         }
 
-        private fun createImageWithUsage(width: Int, height: Int, samples: Int, format: GPUTextureFormat, usage: Set<io.ygdrasil.webgpu.GPUTextureUsage>): WgpuTextureResource {
+        private fun createImageWithUsage(width: Int, height: Int, samples: Int, format: GPUTextureFormat, usage: Set<io.ygdrasil.webgpu.GPUTextureUsage>): OldWgpuTextureResource {
             val descriptor = TextureDescriptor(
                 label = parentPass.name,
                 size = Extent3D(width.toUInt(), height.toUInt(), layers.toUInt()),
@@ -231,9 +231,9 @@ abstract class WgpuRenderPass(
             return backend.createTexture(descriptor)
         }
 
-        private fun WgpuTextureResource.createMipViews() = List<List<GPUTextureView>>(parentPass.numRenderMipLevels) { mipLevel ->
+        private fun OldWgpuTextureResource.createMipViews() = List<List<GPUTextureView>>(parentPass.numRenderMipLevels) { mipLevel ->
             List<GPUTextureView>(layers) { layer ->
-                gpuTexture.createView(baseMipLevel = mipLevel, mipLevelCount = 1, baseArrayLayer = layer, arrayLayerCount = 1)
+                oldGpuTexture.createView(baseMipLevel = mipLevel, mipLevelCount = 1, baseArrayLayer = layer, arrayLayerCount = 1)
             }
         }
 
@@ -271,8 +271,8 @@ abstract class WgpuRenderPass(
             copyToTexture(target, src!!, depthFormat!!, encoder)
         }
 
-        private fun copyToTexture(target: Texture<*>, src: WgpuTextureResource, format: GPUTextureFormat, encoder: GPUCommandEncoder) {
-            var copyDst = (target.gpuTexture as WgpuTextureResource?)
+        private fun copyToTexture(target: Texture<*>, src: OldWgpuTextureResource, format: GPUTextureFormat, encoder: GPUCommandEncoder) {
+            var copyDst = (target.gpuTexture as OldWgpuTextureResource?)
             if (copyDst == null || copyDst.width != parentPass.width || copyDst.height != parentPass.height) {
                 copyDst?.release()
                 copyDst = createImageWithUsage(
@@ -284,7 +284,7 @@ abstract class WgpuRenderPass(
                 )
                 target.gpuTexture = copyDst
             }
-            backend.textureLoader.copyTexture2d(src.gpuTexture, copyDst.gpuTexture, parentPass.numTextureMipLevels, encoder)
+            backend.textureLoader.copyTexture2d(src.oldGpuTexture, copyDst.oldGpuTexture, parentPass.numTextureMipLevels, encoder)
         }
 
         override fun release() {

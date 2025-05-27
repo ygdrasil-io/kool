@@ -47,11 +47,11 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
         val width = colorSrc.width
         val height = colorSrc.height
 
-        var colorDstWgpu: WgpuTextureResource? = null
-        var depthDstWgpu: WgpuTextureResource? = null
+        var colorDstWgpu: OldWgpuTextureResource? = null
+        var depthDstWgpu: OldWgpuTextureResource? = null
 
         colorDst?.let { dst ->
-            var copyDstC = (dst.gpuTexture as WgpuTextureResource?)
+            var copyDstC = (dst.gpuTexture as OldWgpuTextureResource?)
             if (copyDstC == null || copyDstC.width != width || copyDstC.height != height) {
                 copyDstC?.let {
                     launchDelayed(1) { it.release() }
@@ -71,7 +71,7 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
         }
 
         depthDst?.let { dst ->
-            var copyDstD = (dst.gpuTexture as WgpuTextureResource?)
+            var copyDstD = (dst.gpuTexture as OldWgpuTextureResource?)
             if (copyDstD == null || copyDstD.width != width || copyDstD.height != height) {
                 copyDstD?.let {
                     launchDelayed(1) { it.release() }
@@ -95,18 +95,18 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
             val passEncoder = encoder.beginRenderPass(
                 colorAttachments = arrayOf(GPURenderPassColorAttachment(
                     view = colorTextureView!!,
-                    resolveTarget = colorDstWgpu.gpuTexture.createView(),
+                    resolveTarget = colorDstWgpu.oldGpuTexture.createView(),
                 )),
             )
             passEncoder.end()
 
         } else {
             colorDstWgpu?.let { copyDst ->
-                backend.textureLoader.copyTexture2d(colorSrc, copyDst.gpuTexture, 1, encoder)
+                backend.textureLoader.copyTexture2d(colorSrc, copyDst.oldGpuTexture, 1, encoder)
             }
         }
         depthDstWgpu?.let { copyDst ->
-            backend.textureLoader.resolveMultiSampledDepthTexture(depthAttachment!!, copyDst.gpuTexture, encoder)
+            backend.textureLoader.resolveMultiSampledDepthTexture(depthAttachment!!, copyDst.oldGpuTexture, encoder)
         }
     }
 

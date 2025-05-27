@@ -11,14 +11,13 @@ import de.fabmax.kool.util.Uint8BufferImpl
 import de.fabmax.kool.util.logW
 import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.TextureDescriptor
-import io.ygdrasil.webgpu.toFlagInt
 import org.khronos.webgl.ArrayBufferView
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
 
 internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
-    private val loadedTextures = mutableMapOf<String, WgpuTextureResource>()
+    private val loadedTextures = mutableMapOf<String, OldWgpuTextureResource>()
 
     private val device: GPUDevice get() = backend.device
     private val multiSampledDepthTextureCopy = MultiSampledDepthTextureCopy()
@@ -48,7 +47,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         tex.gpuTexture = loaded
     }
 
-    private fun loadTexture1d(tex: Texture1d, data: ImageData1d): WgpuTextureResource {
+    private fun loadTexture1d(tex: Texture1d, data: ImageData1d): OldWgpuTextureResource {
         val size = Extent3D(data.width.toUInt())
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding)
         if (tex.mipMapping.isMipMapped) {
@@ -63,11 +62,11 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, size.toJs())
+        copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         return gpuTex
     }
 
-    private fun loadTexture2d(tex: Texture2d, data: ImageData2d): WgpuTextureResource {
+    private fun loadTexture2d(tex: Texture2d, data: ImageData2d): OldWgpuTextureResource {
         val size = Extent3D(data.width.toUInt(), data.height.toUInt())
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
@@ -79,14 +78,14 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, size.toJs())
+        copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
+            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
 
-    private fun loadTexture3d(tex: Texture3d, data: ImageData3d): WgpuTextureResource {
+    private fun loadTexture3d(tex: Texture3d, data: ImageData3d): OldWgpuTextureResource {
         val size = Extent3D(data.width.toUInt(), data.height.toUInt(), data.depth.toUInt())
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding)
         if (tex.mipMapping.isMipMapped) {
@@ -101,11 +100,11 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, size.toJs())
+        copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         return gpuTex
     }
 
-    private fun loadTextureCube(tex: TextureCube, data: ImageDataCube): WgpuTextureResource {
+    private fun loadTextureCube(tex: TextureCube, data: ImageDataCube): OldWgpuTextureResource {
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = TextureDescriptor(
@@ -116,14 +115,14 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, intArrayOf(data.width, data.height))
+        copyTextureData(data, gpuTex.oldGpuTexture, intArrayOf(data.width, data.height))
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
+            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
 
-    private fun loadTexture2dArray(tex: Texture2dArray, data: ImageData3d): WgpuTextureResource {
+    private fun loadTexture2dArray(tex: Texture2dArray, data: ImageData3d): OldWgpuTextureResource {
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val size = Extent3D(data.width.toUInt(), data.height.toUInt(), data.depth.toUInt())
         val levels = tex.mipMapping.numLevels(data.width, data.height)
@@ -135,14 +134,14 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, size.toJs())
+        copyTextureData(data, gpuTex.oldGpuTexture, size.toJs())
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
+            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
 
-    private fun loadTextureCubeArray(tex: TextureCubeArray, data: ImageDataCubeArray): WgpuTextureResource {
+    private fun loadTextureCubeArray(tex: TextureCubeArray, data: ImageDataCubeArray): OldWgpuTextureResource {
         val usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = TextureDescriptor(
@@ -153,9 +152,9 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.gpuTexture, intArrayOf(data.width, data.height))
+        copyTextureData(data, gpuTex.oldGpuTexture, intArrayOf(data.width, data.height))
         if (tex.mipMapping.isMipMapped) {
-            mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
+            mipmapGenerator.generateMipLevels(gpuTex.oldImageInfo, gpuTex.oldGpuTexture)
         }
         return gpuTex
     }
