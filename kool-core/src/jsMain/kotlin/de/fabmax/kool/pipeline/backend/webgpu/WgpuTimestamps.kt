@@ -60,7 +60,7 @@ class WgpuTimestamps(val size: Int, val backend: RenderBackendWebGpu) {
     fun readTimestamps() {
         if (isInFlight && !isMapping) {
             isMapping = true
-            readBuffer.mapAsync(GPUMapMode.READ).then {
+            readBuffer.mapAsync(GPUMapMode.READ.asDynamic()).asDynamic().then {
                 val decoded = Uint32Array(readBuffer.getMappedRange())
                 for (i in 0..lastActive) {
                     val slot = slots[i]

@@ -1,6 +1,7 @@
 package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.util.Color
+import io.ygdrasil.webgpu.WGPUBuffer
 import org.w3c.dom.ImageBitmap
 
 class GPUBindGroupLayoutDescriptor(
@@ -125,7 +126,7 @@ class GPUBlendComponent(
 
 class GPUBufferBinding(
     @JsName("buffer")
-    val buffer: GPUBuffer,
+    val buffer: WGPUBuffer,
     @JsName("offset")
     val offset: Long = 0,
 //    @JsName("size")
@@ -228,7 +229,7 @@ class GPUImageCopyExternalImage(
 
 class GPUImageCopyBuffer(
     @JsName("buffer")
-    val buffer: GPUBuffer,
+    val buffer: WGPUBuffer,
     @JsName("bytesPerRow")
     val bytesPerRow: Int,
     @JsName("rowsPerImage")

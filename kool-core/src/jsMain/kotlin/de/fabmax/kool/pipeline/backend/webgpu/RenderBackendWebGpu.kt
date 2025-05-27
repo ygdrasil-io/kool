@@ -20,6 +20,7 @@ import de.fabmax.kool.platform.JsContext
 import de.fabmax.kool.platform.navigator
 import de.fabmax.kool.scene.Scene
 import de.fabmax.kool.util.*
+import io.ygdrasil.webgpu.WGPUBuffer
 import kotlinx.browser.window
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -371,7 +372,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     private fun mapReadbacks() {
         gpuReadbacks.filterIsInstance<ReadbackStorageBuffer>().filter { it.mapBuffer != null }.forEach { readback ->
             val mapBuffer = readback.mapBuffer!!
-            mapBuffer.mapAsync(GPUMapMode.READ).then {
+            mapBuffer.mapAsync(GPUMapMode.READ.asDynamic()).asDynamic().then {
                 readback.resultBuffer.copyFrom(mapBuffer.getMappedRange())
                 mapBuffer.unmap()
                 mapBuffer.destroy()
@@ -381,7 +382,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
 
         gpuReadbacks.filterIsInstance<ReadbackTexture>().filter { it.mapBuffer != null }.forEach { readback ->
             val mapBuffer = readback.mapBuffer!!
-            mapBuffer.mapAsync(GPUMapMode.READ).then {
+            mapBuffer.mapAsync(GPUMapMode.READ.asDynamic()).asDynamic().then {
                 val gpuTex = readback.texture.gpuTexture as WgpuTextureResource
                 val format = readback.texture.format
                 val dst = ImageData.createBuffer(format, gpuTex.width, gpuTex.height, gpuTex.depth)
@@ -422,11 +423,11 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     private interface GpuReadback
 
     private class ReadbackStorageBuffer(val storage: GpuBuffer, val deferred: CompletableDeferred<Unit>, val resultBuffer: Buffer) : GpuReadback {
-        var mapBuffer: GPUBuffer? = null
+        var mapBuffer: WGPUBuffer? = null
     }
 
     private class ReadbackTexture(val texture: Texture<*>, val deferred: CompletableDeferred<ImageData>) : GpuReadback {
-        var mapBuffer: GPUBuffer? = null
+        var mapBuffer: WGPUBuffer? = null
     }
 
     data class WebGpuShaderCode(

@@ -4,6 +4,7 @@ import de.fabmax.kool.pipeline.backend.GpuGeometry
 import de.fabmax.kool.scene.Mesh
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.checkIsNotReleased
+import io.ygdrasil.webgpu.WGPUBuffer
 
 class WgpuGeometry(val mesh: Mesh, val backend: RenderBackendWebGpu) : BaseReleasable(), GpuGeometry {
     private val device: GPUDevice get() = backend.device
@@ -12,9 +13,9 @@ class WgpuGeometry(val mesh: Mesh, val backend: RenderBackendWebGpu) : BaseRelea
     private val createdFloatBuffer: WgpuGrowingBuffer?
     private val createdIntBuffer: WgpuGrowingBuffer?
 
-    val indexBuffer: GPUBuffer get() = createdIndexBuffer.buffer.buffer
-    val floatBuffer: GPUBuffer? get() = createdFloatBuffer?.buffer?.buffer
-    val intBuffer: GPUBuffer? get() = createdIntBuffer?.buffer?.buffer
+    val indexBuffer: WGPUBuffer get() = createdIndexBuffer.buffer.buffer
+    val floatBuffer: WGPUBuffer? get() = createdFloatBuffer?.buffer?.buffer
+    val intBuffer: WGPUBuffer? get() = createdIntBuffer?.buffer?.buffer
 
     private var isNewlyCreated = true
 

@@ -2,6 +2,7 @@
 
 package de.fabmax.kool.pipeline.backend.webgpu
 
+import io.ygdrasil.webgpu.WGPUBuffer
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.ArrayBufferView
 import org.w3c.dom.RenderingContext
@@ -24,14 +25,6 @@ external class GPUBindGroup
 
 external interface GPUBindingResource
 
-external class GPUBuffer {
-    val label: String
-    val size: dynamic
-    fun getMappedRange(offset: Long = definedExternally, size: Long = definedExternally): ArrayBuffer
-    fun mapAsync(mode: Int, offset: Long = definedExternally, size: Long = definedExternally): Promise<Unit>
-    fun unmap()
-    fun destroy()
-}
 
 external object GPUMapMode {
     val READ: Int
@@ -62,11 +55,11 @@ external class GPUCommandBuffer
 external class GPUCommandEncoder {
     fun beginComputePass(descriptor: GPUComputePassDescriptor = definedExternally): GPUComputePassEncoder
     fun beginRenderPass(descriptor: GPURenderPassDescriptor): GPURenderPassEncoder
-    fun copyBufferToBuffer(source: GPUBuffer, sourceOffset: Long, destination: GPUBuffer, destinationOffset: Long, size: Long)
+    fun copyBufferToBuffer(source: WGPUBuffer, sourceOffset: Long, destination: WGPUBuffer, destinationOffset: Long, size: Long)
     fun copyTextureToBuffer(source: GPUImageCopyTexture, destination: GPUImageCopyBuffer, copySize: IntArray)
     fun copyTextureToTexture(source: GPUImageCopyTexture, destination: GPUImageCopyTexture, copySize: IntArray)
     //fun writeTimestamp(querySet: GPUQuerySet, queryIndex: Int)
-    fun resolveQuerySet(querySet: GPUQuerySet, firstQuery: Int, queryCount: Int, destination: GPUBuffer, destinationOffset: Long)
+    fun resolveQuerySet(querySet: GPUQuerySet, firstQuery: Int, queryCount: Int, destination: WGPUBuffer, destinationOffset: Long)
     fun finish(): GPUCommandBuffer
 }
 
@@ -83,7 +76,7 @@ external class GPUDevice {
     val limits: GPUSupportedLimits
     val queue: GPUQueue
 
-    fun createBuffer(descriptor: GPUBufferDescriptor): GPUBuffer
+    fun createBuffer(descriptor: GPUBufferDescriptor): WGPUBuffer
     fun createBindGroupLayout(descriptor: GPUBindGroupLayoutDescriptor): GPUBindGroupLayout
     fun createPipelineLayout(descriptor: GPUPipelineLayoutDescriptor): GPUPipelineLayout
     fun createBindGroup(descriptor: GPUBindGroupDescriptor): GPUBindGroup
@@ -102,7 +95,7 @@ external interface GPUPipelineLayout
 
 external class GPUQueue {
     fun submit(commandBuffers: Array<GPUCommandBuffer>)
-    fun writeBuffer(buffer: GPUBuffer, bufferOffset: Long, data: ArrayBufferView, dataOffset: Long = definedExternally, size: Long = definedExternally)
+    fun writeBuffer(buffer: WGPUBuffer, bufferOffset: Long, data: ArrayBufferView, dataOffset: Long = definedExternally, size: Long = definedExternally)
     fun writeTexture(destination: GPUImageCopyTexture, data: ArrayBufferView, dataLayout: GPUImageDataLayout, size: IntArray)
     fun copyExternalImageToTexture(source: GPUImageCopyExternalImage, destination: GPUImageCopyTextureTagged, copySize: IntArray)
 }
@@ -116,8 +109,8 @@ external class GPUComputePassEncoder {
 
 external class GPURenderPassEncoder {
     fun setPipeline(pipeline: GPURenderPipeline)
-    fun setIndexBuffer(buffer: GPUBuffer, indexFormat: GPUIndexFormat, offset: Long = definedExternally, size: Long = definedExternally)
-    fun setVertexBuffer(slot: Int, buffer: GPUBuffer, offset: Long = definedExternally, size: Long = definedExternally)
+    fun setIndexBuffer(buffer: WGPUBuffer, indexFormat: GPUIndexFormat, offset: Long = definedExternally, size: Long = definedExternally)
+    fun setVertexBuffer(slot: Int, buffer: WGPUBuffer, offset: Long = definedExternally, size: Long = definedExternally)
     fun draw(vertexCount: Int, instanceCount: Int = definedExternally, firstVertex: Int = definedExternally, firstInstance: Int = definedExternally)
     fun drawIndexed(indexCount: Int, instanceCount: Int = definedExternally, firstIndex: Int = definedExternally, baseVertex: Int = definedExternally, firstInstance: Int = definedExternally)
     fun setBindGroup(index: Int, bindGroup: GPUBindGroup, dynamicOffsets: Array<Int> = definedExternally)

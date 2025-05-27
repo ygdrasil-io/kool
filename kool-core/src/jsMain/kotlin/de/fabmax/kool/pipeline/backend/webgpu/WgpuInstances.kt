@@ -5,6 +5,7 @@ import de.fabmax.kool.scene.Mesh
 import de.fabmax.kool.scene.MeshInstanceList
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.checkIsNotReleased
+import io.ygdrasil.webgpu.WGPUBuffer
 
 class WgpuInstances(val instances: MeshInstanceList, val backend: RenderBackendWebGpu, mesh: Mesh) : BaseReleasable(), GpuInstances {
     private val device: GPUDevice get() = backend.device
@@ -15,7 +16,7 @@ class WgpuInstances(val instances: MeshInstanceList, val backend: RenderBackendW
             label = "${mesh.name} instance data", instances.strideBytesF * instances.maxInstances.toLong(),
         )
     }
-    val instanceBuffer: GPUBuffer? get() = createdInstanceBuffer?.buffer?.buffer
+    val instanceBuffer: WGPUBuffer? get() = createdInstanceBuffer?.buffer?.buffer
 
     private var isNewlyCreated = true
 
