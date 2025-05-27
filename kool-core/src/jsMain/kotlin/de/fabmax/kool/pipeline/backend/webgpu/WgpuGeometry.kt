@@ -13,9 +13,9 @@ class WgpuGeometry(val mesh: Mesh, val backend: RenderBackendWebGpu) : BaseRelea
     private val createdFloatBuffer: WgpuGrowingBuffer?
     private val createdIntBuffer: WgpuGrowingBuffer?
 
-    val indexBuffer: WGPUBuffer get() = createdIndexBuffer.buffer.buffer
-    val floatBuffer: WGPUBuffer? get() = createdFloatBuffer?.buffer?.buffer
-    val intBuffer: WGPUBuffer? get() = createdIntBuffer?.buffer?.buffer
+    val indexBuffer: WGPUBuffer get() = createdIndexBuffer.buffer.oldBuffer
+    val floatBuffer: WGPUBuffer? get() = createdFloatBuffer?.buffer?.oldBuffer
+    val intBuffer: WGPUBuffer? get() = createdIntBuffer?.buffer?.oldBuffer
 
     private var isNewlyCreated = true
 

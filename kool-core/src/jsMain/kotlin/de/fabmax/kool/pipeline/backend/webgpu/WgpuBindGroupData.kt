@@ -50,7 +50,7 @@ class WgpuBindGroupData(
             val ubo = bufferBindings[i]
             if (ubo.modCount != ubo.binding.modCount || recreatedBindGroup) {
                 device.queue.writeBuffer(
-                    buffer = ubo.gpuBuffer.buffer,
+                    buffer = ubo.gpuBuffer.oldBuffer,
                     bufferOffset = 0L,
                     data = (ubo.binding.buffer.buffer as MixedBufferImpl).buffer
                 )
@@ -70,7 +70,7 @@ class WgpuBindGroupData(
                     else -> error("unexpected buffer type: ${upload::class.simpleName}")
                 }
                 device.queue.writeBuffer(
-                    buffer = storage.gpuBuffer.buffer,
+                    buffer = storage.gpuBuffer.oldBuffer,
                     bufferOffset = 0L,
                     data = hostBuffer
                 )
@@ -123,7 +123,7 @@ class WgpuBindGroupData(
             "scene: ${pass.parentScene?.name}, render-pass: ${pass.name}"
         )
         bufferBindings += BufferBinding(this, gpuBuffer)
-        return GPUBindGroupEntry(location.binding, GPUBufferBinding(gpuBuffer.buffer))
+        return GPUBindGroupEntry(location.binding, GPUBufferBinding(gpuBuffer.oldBuffer))
     }
 
     private fun BindGroupData.StorageBufferBindingData.makeEntry(pass: GpuPass): GPUBindGroupEntry {
@@ -142,7 +142,7 @@ class WgpuBindGroupData(
             storage.gpuBuffer = gpuBuffer
         }
         storageBufferBindings += StorageBufferBinding(this, gpuBuffer)
-        return GPUBindGroupEntry(location.binding, GPUBufferBinding(gpuBuffer.buffer))
+        return GPUBindGroupEntry(location.binding, GPUBufferBinding(gpuBuffer.oldBuffer))
     }
 
     private fun BindGroupData.Texture1dBindingData.makeTexture1dEntry(): List<GPUBindGroupEntry> {

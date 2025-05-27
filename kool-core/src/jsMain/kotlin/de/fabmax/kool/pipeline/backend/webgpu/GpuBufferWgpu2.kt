@@ -6,11 +6,11 @@ import de.fabmax.kool.util.*
 import io.ygdrasil.webgpu.GPUBuffer
 import io.ygdrasil.webgpu.WGPUBuffer
 
-class GpuBufferWgpu2(buffer: GPUBuffer, size: Long, info: String?) :
+class GpuBufferWgpu2(val buffer: GPUBuffer, size: Long, info: String?) :
     BaseReleasable(), GpuBufferImpl
 {
 
-    val buffer: WGPUBuffer = (buffer as io.ygdrasil.webgpu.Buffer).handler
+    val oldBuffer: WGPUBuffer = (buffer as io.ygdrasil.webgpu.Buffer).handler
 
     private val bufferInfo = BufferInfo(buffer.label, info ?: "<none>").apply {
         allocated(size)
@@ -18,7 +18,7 @@ class GpuBufferWgpu2(buffer: GPUBuffer, size: Long, info: String?) :
 
     override fun release() {
         super.release()
-        buffer.destroy()
+        buffer.close()
         bufferInfo.deleted()
     }
 }
@@ -39,7 +39,7 @@ internal class WgpuGrowingBuffer(
     fun writeData(data: Float32Buffer) {
         checkSize(data.limit * 4L)
         device.queue.writeBuffer(
-            buffer = buffer.buffer,
+            buffer = buffer.buffer.toJs(),
             bufferOffset = 0L,
             data = (data as Float32BufferImpl).buffer,
             dataOffset = 0L,
@@ -50,7 +50,7 @@ internal class WgpuGrowingBuffer(
     fun writeData(data: Int32Buffer) {
         checkSize(data.limit * 4L)
         device.queue.writeBuffer(
-            buffer = buffer.buffer,
+            buffer = buffer.buffer.toJs(),
             bufferOffset = 0L,
             data = (data as Int32BufferImpl).buffer,
             dataOffset = 0L,
@@ -74,4 +74,8 @@ internal class WgpuGrowingBuffer(
         ),
         label
     )
+}
+
+fun GPUBuffer.toJs(): WGPUBuffer {
+    return (this as io.ygdrasil.webgpu.Buffer).handler
 }

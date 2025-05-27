@@ -38,7 +38,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
             )
         ))
         val bindGroup: GPUBindGroup = backend.device.createBindGroup(bindGroupLayout, arrayOf(
-            GPUBindGroupEntry(0, GPUBufferBinding(clearValuesBuffer.buffer))
+            GPUBindGroupEntry(0, GPUBufferBinding(clearValuesBuffer.buffer.toJs()))
         ))
 
         val clearColorOnly: GPURenderPipeline by lazy { makeClearPipeline(true, false) }
@@ -60,7 +60,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
                 clearValues.clear()
                 clearColor?.putTo(clearValues)
                 clearValues[4] = clearDepth
-                backend.device.queue.writeBuffer(clearValuesBuffer.buffer, 0, clearValues.buffer, 0)
+                backend.device.queue.writeBuffer(clearValuesBuffer.oldBuffer, 0, clearValues.buffer, 0)
             }
 
             val clearPipeline = when {

@@ -337,7 +337,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
                         usage = GPUBufferUsage.MAP_READ or GPUBufferUsage.COPY_DST
                     )
                 )
-                encoder.copyBufferToBuffer(gpuBuf.buffer, 0L, mapBuffer, 0L, size)
+                encoder.copyBufferToBuffer(gpuBuf.oldBuffer, 0L, mapBuffer, 0L, size)
                 readback.mapBuffer = mapBuffer
             }
         }

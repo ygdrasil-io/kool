@@ -16,7 +16,7 @@ class WgpuInstances(val instances: MeshInstanceList, val backend: RenderBackendW
             label = "${mesh.name} instance data", instances.strideBytesF * instances.maxInstances.toLong(),
         )
     }
-    val instanceBuffer: WGPUBuffer? get() = createdInstanceBuffer?.buffer?.buffer
+    val instanceBuffer: WGPUBuffer? get() = createdInstanceBuffer?.buffer?.oldBuffer
 
     private var isNewlyCreated = true
 
