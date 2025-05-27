@@ -175,6 +175,7 @@ value class GPUTextureFormat private constructor(val enumValue: String) {
         val rgba32sint = GPUTextureFormat("rgba32sint")
         val rgba32float = GPUTextureFormat("rgba32float")
         val depth32float = GPUTextureFormat("depth32float")
+        val rg11b10ufloat = GPUTextureFormat("rg11b10ufloat")
     }
 }
 
