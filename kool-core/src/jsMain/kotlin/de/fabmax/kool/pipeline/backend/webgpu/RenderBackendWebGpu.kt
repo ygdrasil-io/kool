@@ -22,6 +22,9 @@ import de.fabmax.kool.platform.JsContext
 import de.fabmax.kool.platform.navigator
 import de.fabmax.kool.scene.Scene
 import de.fabmax.kool.util.*
+import io.ygdrasil.webgpu.Device
+import io.ygdrasil.webgpu.Extent3D
+import io.ygdrasil.webgpu.TextureDescriptor
 import io.ygdrasil.webgpu.WGPUBuffer
 import io.ygdrasil.webgpu.toFlagInt
 import kotlinx.browser.window
@@ -286,14 +289,14 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
             io.ygdrasil.webgpu.GPUTextureUsage.CopyDst,
             io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding)
         val dimension = when (storageTexture) {
-            is StorageTexture1d -> GPUTextureDimension.texture1d
-            is StorageTexture2d -> GPUTextureDimension.texture2d
-            is StorageTexture3d -> GPUTextureDimension.texture3d
+            is StorageTexture1d -> GPUTextureDimension.texture1d.enumValue
+            is StorageTexture2d -> GPUTextureDimension.texture2d.enumValue
+            is StorageTexture3d -> GPUTextureDimension.texture3d.enumValue
         }
         val size = when (storageTexture) {
-            is StorageTexture1d -> intArrayOf(width)
-            is StorageTexture2d -> intArrayOf(width, height)
-            is StorageTexture3d -> intArrayOf(width, height, depth)
+            is StorageTexture1d -> Extent3D(width.toUInt())
+            is StorageTexture2d -> Extent3D(width.toUInt(), height.toUInt())
+            is StorageTexture3d -> Extent3D(width.toUInt(), height.toUInt(), depth.toUInt())
         }
         val levels = when (val mipMapping = storageTexture.mipMapping) {
             MipMapping.Full -> numMipLevels(width, height, depth)
@@ -304,12 +307,12 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         if (storageTexture.format == TexFormat.RG11B10_F) {
             logW { "Storage texture format RG11B10_F is not supported by WebGPU, using RGBA_F16 instead" }
         }
-        val texDesc = GPUTextureDescriptor(
+        val texDesc = TextureDescriptor(
             size = size,
-            format = storageTexture.format.wgpuStorage.value,
-            dimension = dimension,
-            usage = usage.toFlagInt(),
-            mipLevelCount = levels,
+            format = storageTexture.format.wgpuStorage,
+            dimension = io.ygdrasil.webgpu.GPUTextureDimension.of(dimension)!!,
+            usage = usage,
+            mipLevelCount = levels.toUInt(),
             label = storageTexture.name
         )
         storageTexture.gpuTexture?.release()
@@ -420,8 +423,8 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
     }
 
-    fun createTexture(descriptor: GPUTextureDescriptor): WgpuTextureResource {
-        return WgpuTextureResource(descriptor, device.createTexture(descriptor))
+    fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): WgpuTextureResource {
+        return WgpuTextureResource(descriptor, Device(device.asDynamic(), null).createTexture(descriptor))
     }
 
     private interface GpuReadback

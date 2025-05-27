@@ -4,7 +4,8 @@ import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.releaseWith
-import io.ygdrasil.webgpu.toFlagInt
+import io.ygdrasil.webgpu.Extent3D
+import io.ygdrasil.webgpu.TextureDescriptor
 import kotlin.time.Duration.Companion.nanoseconds
 
 abstract class WgpuRenderPass(
@@ -214,18 +215,18 @@ abstract class WgpuRenderPass(
                 else -> setOf(io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment)
             }
 
-            return createImageWithUsage(width, height, samples, format, usage.toFlagInt())
+            return createImageWithUsage(width, height, samples, format, usage)
         }
 
-        private fun createImageWithUsage(width: Int, height: Int, samples: Int, format: GPUTextureFormat, usage: Int): WgpuTextureResource {
-            val descriptor = GPUTextureDescriptor(
+        private fun createImageWithUsage(width: Int, height: Int, samples: Int, format: GPUTextureFormat, usage: Set<io.ygdrasil.webgpu.GPUTextureUsage>): WgpuTextureResource {
+            val descriptor = TextureDescriptor(
                 label = parentPass.name,
-                size = intArrayOf(width, height, layers),
-                format = format.enumValue,
+                size = Extent3D(width.toUInt(), height.toUInt(), layers.toUInt()),
+                format = io.ygdrasil.webgpu.GPUTextureFormat.of(format.enumValue)!!,
                 usage = usage,
-                dimension = GPUTextureDimension.texture2d,
-                mipLevelCount = parentPass.numTextureMipLevels,
-                sampleCount = samples
+                dimension = io.ygdrasil.webgpu.GPUTextureDimension.of(GPUTextureDimension.texture2d.enumValue)!!,
+                mipLevelCount = parentPass.numTextureMipLevels.toUInt(),
+                sampleCount = samples.toUInt()
             )
             return backend.createTexture(descriptor)
         }
@@ -279,7 +280,7 @@ abstract class WgpuRenderPass(
                     height = parentPass.height,
                     samples = 1,
                     format = format,
-                    usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT,
+                    usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment),
                 )
                 target.gpuTexture = copyDst
             }

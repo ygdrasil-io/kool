@@ -496,9 +496,9 @@ class GPUTextureDescriptor(
     @JsName("sampleCount")
     val sampleCount: Int = 1,
     @JsName("dimension")
-    val dimension: GPUTextureDimension = GPUTextureDimension.texture2d,
+    val dimension: String = GPUTextureDimension.texture2d.enumValue,
     @JsName("viewFormats")
-    val viewFormats: Array<GPUTextureFormat> = emptyArray(),
+    val viewFormats: Array<String> = emptyArray(),
 )
 
 interface GPUTextureViewDescriptor

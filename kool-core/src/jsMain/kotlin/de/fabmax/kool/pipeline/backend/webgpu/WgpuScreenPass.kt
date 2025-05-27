@@ -8,6 +8,8 @@ import de.fabmax.kool.pipeline.ClearDepthLoad
 import de.fabmax.kool.pipeline.FrameCopy
 import de.fabmax.kool.scene.Scene
 import de.fabmax.kool.util.launchDelayed
+import io.ygdrasil.webgpu.Extent3D
+import io.ygdrasil.webgpu.TextureDescriptor
 
 class WgpuScreenPass(backend: RenderBackendWebGpu) :
     WgpuRenderPass(GPUTextureFormat.depth32float, KoolSystem.configJs.numSamples, backend)
@@ -55,11 +57,11 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
                     launchDelayed(1) { it.release() }
                 }
 
-                val descriptor = GPUTextureDescriptor(
+                val descriptor = TextureDescriptor(
                     label = colorDst.name,
-                    size = intArrayOf(width, height),
-                    format = backend.canvasFormat.enumValue,
-                    usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT,
+                    size = Extent3D(width.toUInt(), height.toUInt()),
+                    format = io.ygdrasil.webgpu.GPUTextureFormat.of(backend.canvasFormat.enumValue)!!,
+                    usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment),
                 )
                 val texResource = backend.createTexture(descriptor)
                 copyDstC = texResource
@@ -75,11 +77,11 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
                     launchDelayed(1) { it.release() }
                 }
 
-                val descriptor = GPUTextureDescriptor(
+                val descriptor = TextureDescriptor(
                     label = dst.name,
-                    size = intArrayOf(width, height),
-                    format = depthFormat!!.enumValue,
-                    usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT,
+                    size = Extent3D(width.toUInt(), height.toUInt()),
+                    format = io.ygdrasil.webgpu.GPUTextureFormat.of(depthFormat!!.enumValue)!!,
+                    usage = setOf(io.ygdrasil.webgpu.GPUTextureUsage.CopyDst, io.ygdrasil.webgpu.GPUTextureUsage.TextureBinding, io.ygdrasil.webgpu.GPUTextureUsage.RenderAttachment),
                 )
                 val texResource = backend.createTexture(descriptor)
                 copyDstD = texResource
