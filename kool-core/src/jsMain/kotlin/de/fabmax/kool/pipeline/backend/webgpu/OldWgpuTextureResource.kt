@@ -2,6 +2,7 @@ package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureResource
 import io.ygdrasil.webgpu.GPUExtent3D
+import io.ygdrasil.webgpu.GPUOrigin3D
 import io.ygdrasil.webgpu.Texture
 import io.ygdrasil.webgpu.toFlagInt
 
@@ -30,5 +31,10 @@ fun GPUExtent3D.toJs(): IntArray {
     return intArrayOf(width.toInt(), height.toInt(), depthOrArrayLayers.toInt())
 }
 
+fun GPUOrigin3D.toJs(): IntArray {
+    return intArrayOf(x.toInt(), y.toInt(), z.toInt())
+}
+
 
 fun io.ygdrasil.webgpu.GPUTexture.toJs(): GPUTexture = (this as Texture).handler.asDynamic()
+

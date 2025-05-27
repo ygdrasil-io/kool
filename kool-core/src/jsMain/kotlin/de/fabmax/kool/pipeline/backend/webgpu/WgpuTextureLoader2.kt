@@ -14,6 +14,8 @@ import de.fabmax.kool.util.Uint8BufferImpl
 import de.fabmax.kool.util.logW
 import io.ygdrasil.webgpu.Device
 import io.ygdrasil.webgpu.Extent3D
+import io.ygdrasil.webgpu.GPUOrigin3D
+import io.ygdrasil.webgpu.Origin3D
 import io.ygdrasil.webgpu.TextureDescriptor
 import org.khronos.webgl.ArrayBufferView
 import org.khronos.webgl.Uint8Array
@@ -70,7 +72,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, size)
+        copyTextureData(data, gpuTex.gpuTexture, size)
         return gpuTex
     }
 
@@ -86,7 +88,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, size)
+        copyTextureData(data, gpuTex.gpuTexture, size)
         if (tex.mipMapping.isMipMapped) {
             mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
         }
@@ -108,7 +110,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, size)
+        copyTextureData(data, gpuTex.gpuTexture, size)
         return gpuTex
     }
 
@@ -123,7 +125,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, Extent3D(data.width.toUInt(), data.height.toUInt()))
+        copyTextureData(data, gpuTex.gpuTexture, Extent3D(data.width.toUInt(), data.height.toUInt()))
         if (tex.mipMapping.isMipMapped) {
             mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
         }
@@ -142,7 +144,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, size)
+        copyTextureData(data, gpuTex.gpuTexture, size)
         if (tex.mipMapping.isMipMapped) {
             mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
         }
@@ -160,7 +162,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         )
 
         val gpuTex = backend.createTexture(texDesc)
-        copyTextureData(data, gpuTex.oldGpuTexture, Extent3D(data.width.toUInt(), data.height.toUInt()))
+        copyTextureData(data, gpuTex.gpuTexture, Extent3D(data.width.toUInt(), data.height.toUInt()))
         if (tex.mipMapping.isMipMapped) {
             mipmapGenerator.generateMipLevels(gpuTex.imageInfo, gpuTex.gpuTexture)
         }
@@ -191,47 +193,47 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
         MipMapping.Off -> 1
     }
 
-    private fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
+    private fun copyTextureData(src: ImageData, dst: io.ygdrasil.webgpu.GPUTexture, size: Extent3D) {
         println("${src::class.simpleName} -> ${dst::class.simpleName} ${size}")
         when (src) {
-            is ImageTextureData -> copyTextureData(src, dst, size, intArrayOf(0, 0, 0))
-            is BufferedImageData1d -> copyTextureData(src, dst, size, intArrayOf(0, 0, 0))
-            is BufferedImageData2d -> copyTextureData(src, dst, size, intArrayOf(0, 0, 0))
-            is BufferedImageData3d -> copyTextureData(src, dst, size, intArrayOf(0, 0, 0))
+            is ImageTextureData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
+            is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
+            is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
+            is BufferedImageData3d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is ImageDataCube -> {
-                copyTextureData(src.posX, dst, size, intArrayOf(0, 0, 0))
-                copyTextureData(src.negX, dst, size, intArrayOf(0, 0, 1))
-                copyTextureData(src.posY, dst, size, intArrayOf(0, 0, 2))
-                copyTextureData(src.negY, dst, size, intArrayOf(0, 0, 3))
-                copyTextureData(src.posZ, dst, size, intArrayOf(0, 0, 4))
-                copyTextureData(src.negZ, dst, size, intArrayOf(0, 0, 5))
+                copyTextureData(src.posX, dst, size, Origin3D(0u, 0u, 0u))
+                copyTextureData(src.negX, dst, size, Origin3D(0u, 0u, 1u))
+                copyTextureData(src.posY, dst, size, Origin3D(0u, 0u, 2u))
+                copyTextureData(src.negY, dst, size, Origin3D(0u, 0u, 3u))
+                copyTextureData(src.posZ, dst, size, Origin3D(0u, 0u, 4u))
+                copyTextureData(src.negZ, dst, size, Origin3D(0u, 0u, 5u))
             }
             is ImageDataCubeArray -> {
                 src.cubes.forEachIndexed { i, cube ->
-                    copyTextureData(cube.posX, dst, size, intArrayOf(0, 0, i * 6 + 0))
-                    copyTextureData(cube.negX, dst, size, intArrayOf(0, 0, i * 6 + 1))
-                    copyTextureData(cube.posY, dst, size, intArrayOf(0, 0, i * 6 + 2))
-                    copyTextureData(cube.negY, dst, size, intArrayOf(0, 0, i * 6 + 3))
-                    copyTextureData(cube.posZ, dst, size, intArrayOf(0, 0, i * 6 + 4))
-                    copyTextureData(cube.negZ, dst, size, intArrayOf(0, 0, i * 6 + 5))
+                    copyTextureData(cube.posX, dst, size, Origin3D(0u, 0u, (i * 6 + 0).toUInt()))
+                    copyTextureData(cube.negX, dst, size, Origin3D(0u, 0u, (i * 6 + 1).toUInt()))
+                    copyTextureData(cube.posY, dst, size, Origin3D(0u, 0u, (i * 6 + 2).toUInt()))
+                    copyTextureData(cube.negY, dst, size, Origin3D(0u, 0u, (i * 6 + 3).toUInt()))
+                    copyTextureData(cube.posZ, dst, size, Origin3D(0u, 0u, (i * 6 + 4).toUInt()))
+                    copyTextureData(cube.negZ, dst, size, Origin3D(0u, 0u, (i * 6 + 5).toUInt()))
                 }
             }
             is ImageData2dArray -> {
                 val size2d = Extent3D(size.width, size.height)
                 for (i in src.images.indices) {
-                    copyTextureData(src.images[i], dst, size2d, intArrayOf(0, 0, i))
+                    copyTextureData(src.images[i], dst, size2d, Origin3D(0u, 0u, i.toUInt()))
                 }
             }
             else -> error("Not implemented: ${src::class.simpleName}")
         }
     }
 
-    private fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: IntArray) {
+    private fun copyTextureData(src: ImageData, dst: io.ygdrasil.webgpu.GPUTexture, size: Extent3D, dstOrigin: GPUOrigin3D) {
         when (src) {
             is BufferedImageData -> {
                 device.queue.writeTexture(
                     data = src.arrayBufferView,
-                    destination = GPUImageCopyTexture(dst, origin = dstOrigin),
+                    destination = GPUImageCopyTexture(dst.toJs(), origin = dstOrigin.toJs()),
                     dataLayout = src.gpuImageDataLayout,
                     size = size.toJs()
                 )
@@ -239,7 +241,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
             is ImageTextureData -> {
                 device.queue.copyExternalImageToTexture(
                     source = GPUImageCopyExternalImage(src.data),
-                    destination = GPUImageCopyTextureTagged(dst, origin = dstOrigin),
+                    destination = GPUImageCopyTextureTagged(dst.toJs(), origin = dstOrigin.toJs()),
                     copySize = size.toJs()
                 )
             }
