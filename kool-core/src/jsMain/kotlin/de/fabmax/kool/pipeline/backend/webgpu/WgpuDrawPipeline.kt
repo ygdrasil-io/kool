@@ -108,7 +108,7 @@ class WgpuDrawPipeline(
         val fragmentState = GPUFragmentState(
             module = fragmentShaderModule,
             entryPoint = shaderCode.fragmentEntryPoint,
-            targets = gpuRenderPass.colorTargetFormats.map { GPUColorTargetState(it, blendMode) }.toTypedArray()
+            targets = gpuRenderPass.colorTargetFormats.map { GPUColorTargetState(it.enumValue, blendMode) }.toTypedArray()
         )
 
         val depthOp = when {

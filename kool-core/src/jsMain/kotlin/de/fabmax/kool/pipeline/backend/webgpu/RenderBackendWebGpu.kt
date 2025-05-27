@@ -15,6 +15,7 @@ import de.fabmax.kool.pipeline.backend.RenderBackend
 import de.fabmax.kool.pipeline.backend.RenderBackendJs
 import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
+import de.fabmax.kool.pipeline.backend.wgpu.wgpuStorage
 import de.fabmax.kool.pipeline.backend.wgsl.WgslGenerator
 import de.fabmax.kool.platform.JsContext
 import de.fabmax.kool.platform.navigator
@@ -302,7 +303,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = storageTexture.format.wgpuStorage,
+            format = storageTexture.format.wgpuStorage.name,
             dimension = dimension,
             usage = usage,
             mipLevelCount = levels,

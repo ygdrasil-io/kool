@@ -218,7 +218,7 @@ abstract class WgpuRenderPass(
             val descriptor = GPUTextureDescriptor(
                 label = parentPass.name,
                 size = intArrayOf(width, height, layers),
-                format = format,
+                format = format.enumValue,
                 usage = usage,
                 dimension = GPUTextureDimension.texture2d,
                 mipLevelCount = parentPass.numTextureMipLevels,

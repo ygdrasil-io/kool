@@ -58,7 +58,7 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
                 val descriptor = GPUTextureDescriptor(
                     label = colorDst.name,
                     size = intArrayOf(width, height),
-                    format = backend.canvasFormat,
+                    format = backend.canvasFormat.enumValue,
                     usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT,
                 )
                 val texResource = backend.createTexture(descriptor)
@@ -78,7 +78,7 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
                 val descriptor = GPUTextureDescriptor(
                     label = dst.name,
                     size = intArrayOf(width, height),
-                    format = depthFormat!!,
+                    format = depthFormat!!.enumValue,
                     usage = GPUTextureUsage.COPY_DST or GPUTextureUsage.TEXTURE_BINDING or GPUTextureUsage.RENDER_ATTACHMENT,
                 )
                 val texResource = backend.createTexture(descriptor)
@@ -152,7 +152,7 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
 
         val colorDescriptor = GPUTextureDescriptor(
             size = intArrayOf(width, height),
-            format = backend.canvasFormat,
+            format = backend.canvasFormat.enumValue,
             usage = GPUTextureUsage.RENDER_ATTACHMENT or GPUTextureUsage.TEXTURE_BINDING,
             sampleCount = numSamples
         )
@@ -162,7 +162,7 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
 
         val depthDescriptor = GPUTextureDescriptor(
             size = intArrayOf(width, height),
-            format = depthFormat!!,
+            format = depthFormat!!.enumValue,
             usage = GPUTextureUsage.RENDER_ATTACHMENT or GPUTextureUsage.TEXTURE_BINDING,
             sampleCount = numSamples
         )

@@ -54,7 +54,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
 
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             dimension = GPUTextureDimension.texture1d,
             usage = usage
         )
@@ -70,7 +70,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             usage = usage,
             mipLevelCount = levels
         )
@@ -92,7 +92,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
 
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             usage = usage,
             dimension = GPUTextureDimension.texture3d,
         )
@@ -107,7 +107,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = intArrayOf(data.width, data.height, 6),
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             usage = usage,
             mipLevelCount = levels
         )
@@ -126,7 +126,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = size,
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             usage = usage,
             mipLevelCount = levels
         )
@@ -144,7 +144,7 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         val levels = tex.mipMapping.numLevels(data.width, data.height)
         val texDesc = GPUTextureDescriptor(
             size = intArrayOf(data.width, data.height, 6 * data.slices),
-            format = data.format.wgpu,
+            format = data.format.wgpu.enumValue,
             usage = usage,
             mipLevelCount = levels
         )
@@ -318,9 +318,9 @@ internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
         """.trimIndent())
 
         private val sampler = device.createSampler(minFilter = GPUFilterMode.linear)
-        private val pipelines = mutableMapOf<GPUTextureFormat, GPURenderPipeline>()
+        private val pipelines = mutableMapOf<String, GPURenderPipeline>()
 
-        private fun getRenderPipeline(format: GPUTextureFormat): GPURenderPipeline = pipelines.getOrPut(format) {
+        private fun getRenderPipeline(format: String): GPURenderPipeline = pipelines.getOrPut(format) {
             device.createRenderPipeline(
                 GPURenderPipelineDescriptor(
                     vertex = GPUVertexState(

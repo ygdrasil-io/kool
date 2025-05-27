@@ -2,6 +2,7 @@ package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.stats.PipelineInfo
+import de.fabmax.kool.pipeline.backend.wgpu.wgpuStorage
 import de.fabmax.kool.pipeline.backend.wgsl.WgslLocations
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.Time
@@ -137,7 +138,7 @@ sealed class WgpuPipeline(
         return GPUBindGroupLayoutEntryStorageTexture(
             location.binding,
             visibility,
-            GPUStorageTextureBindingLayout(access, binding.texFormat.wgpuStorage, dimension)
+            GPUStorageTextureBindingLayout(access, binding.texFormat.wgpuStorage.value, dimension)
         )
     }
 

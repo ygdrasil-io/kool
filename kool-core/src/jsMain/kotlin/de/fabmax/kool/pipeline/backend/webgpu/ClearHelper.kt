@@ -90,7 +90,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
                         module = shaderModule,
                         entryPoint = "fragmentMain",
                         targets = arrayOf(
-                            GPUColorTargetState(colorFormat, GPUBlendState(
+                            GPUColorTargetState(colorFormat.enumValue, GPUBlendState(
                                 color = GPUBlendComponent(srcFactor = colorSrcFactor.enumValue, dstFactor = colorDstFactor.enumValue),
                                 alpha = GPUBlendComponent(srcFactor = colorSrcFactor.enumValue, dstFactor = colorDstFactor.enumValue),
                             ))

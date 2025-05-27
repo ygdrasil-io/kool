@@ -85,7 +85,7 @@ class GPUStorageTextureBindingLayout(
     @JsName("access")
     val access: GPUStorageTextureAccess,
     @JsName("format")
-    val format: GPUTextureFormat,
+    val format: String,
     @JsName("viewDimension")
     val viewDimension: GPUTextureViewDimension,
 )
@@ -178,7 +178,7 @@ fun GPUColorDict(color: Color): GPUColorDict = GPUColorDict(color.r, color.g, co
 interface GPUColorTargetState
 
 fun GPUColorTargetState(
-    format: GPUTextureFormat,
+    format: String,
     blend: GPUBlendState? = null
 ) : GPUColorTargetState {
     val o = js("({})")
@@ -486,7 +486,7 @@ class GPUTextureDescriptor(
     @JsName("size")
     val size: IntArray,
     @JsName("format")
-    val format: GPUTextureFormat,
+    val format: String,
     @JsName("usage")
     val usage: Int,
     @JsName("label")
