@@ -212,7 +212,6 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
     // TODO: switch to private
     internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
         when (src) {
-            is ImageData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData3d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
@@ -241,34 +240,13 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
                     copyTextureData(src.images[i], dst, size2d, Origin3D(0u, 0u, i.toUInt()))
                 }
             }
+            else -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
         }
     }
 
     // TODO: switch to private
     internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: GPUOrigin3D) {
-        when (src) {
-            is BufferedImageData -> {
-                src.data.asArrayBuffer { arrayBuffer ->
-                    device.queue.writeTexture(
-                        data = arrayBuffer,
-                        destination = TexelCopyTextureInfo(dst, origin = dstOrigin),
-                        dataLayout = src.gpuImageDataLayout,
-                        size = size
-                    )
-                }
-            }
-            // Unsupported
-            else -> copyNativeTextureData(src, dst, size, dstOrigin, device)
-        }
-    }
-
-    private val ImageData.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
-        return when (this) {
-            is BufferedImageData1d -> gpuImageDataLayout
-            is BufferedImageData2d -> gpuImageDataLayout
-            is BufferedImageData3d -> gpuImageDataLayout
-            else -> error("Invalid TextureData type: $this")
-        }
+        copyNativeTextureData(src, dst, size, dstOrigin, device)
     }
 
     private val BufferedImageData1d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
@@ -470,3 +448,12 @@ expect internal fun copyNativeTextureData(
     dstOrigin: GPUOrigin3D,
     device: GPUDevice
 )
+
+internal val ImageData.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
+    return when (this) {
+        is BufferedImageData1d -> gpuImageDataLayout
+        is BufferedImageData2d -> gpuImageDataLayout
+        is BufferedImageData3d -> gpuImageDataLayout
+        else -> error("Invalid TextureData type: $this")
+    }
+}

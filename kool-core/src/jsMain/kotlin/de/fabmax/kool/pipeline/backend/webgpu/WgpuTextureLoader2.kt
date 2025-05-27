@@ -197,7 +197,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
     private fun copyTextureData(src: ImageData, dst: io.ygdrasil.webgpu.GPUTexture, size: Extent3D) {
         println("${src::class.simpleName} -> ${dst::class.simpleName} ${size}")
         when (src) {
-            is ImageTextureData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u),)
+            is ImageTextureData -> loader.copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u),)
             is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData3d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
