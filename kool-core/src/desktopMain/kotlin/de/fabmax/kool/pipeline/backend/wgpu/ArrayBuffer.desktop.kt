@@ -17,7 +17,11 @@ actual fun ArrayBuffer.writeInto(target: Buffer): Unit {
 
 actual fun Buffer.asArrayBuffer(block: (ArrayBuffer) -> Unit) {
     this.asNioBuffer()
-        .let(MemorySegment::ofBuffer)
+        .asArrayBuffer(block)
+}
+
+fun java.nio.Buffer.asArrayBuffer(block: (ArrayBuffer) -> Unit) {
+    this.let(MemorySegment::ofBuffer)
         .let { ArrayBuffer(it.address().toULong(), it.byteSize().toULong()) }
         .also { block(it) }
 }
