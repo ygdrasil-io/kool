@@ -14,6 +14,7 @@ import io.ygdrasil.webgpu.GPUCompareFunction
 import io.ygdrasil.webgpu.GPUDevice
 import io.ygdrasil.webgpu.GPUFilterMode
 import io.ygdrasil.webgpu.GPULoadOp
+import io.ygdrasil.webgpu.GPUOrigin3D
 import io.ygdrasil.webgpu.GPUPrimitiveTopology
 import io.ygdrasil.webgpu.GPURenderPipeline
 import io.ygdrasil.webgpu.GPUStoreOp
@@ -209,8 +210,9 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
     }
 
     // TODO: switch to private
-    internal  fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
+    internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D) {
         when (src) {
+            is ImageData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData3d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
@@ -239,11 +241,11 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
                     copyTextureData(src.images[i], dst, size2d, Origin3D(0u, 0u, i.toUInt()))
                 }
             }
-            else -> copyNativeTextureData(src, dst, size, device)
         }
     }
 
-    private fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: Origin3D) {
+    // TODO: switch to private
+    internal fun copyTextureData(src: ImageData, dst: GPUTexture, size: Extent3D, dstOrigin: GPUOrigin3D) {
         when (src) {
             is BufferedImageData -> {
                 src.data.asArrayBuffer { arrayBuffer ->
@@ -256,14 +258,7 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
                 }
             }
             // Unsupported
-            /*is ImageTextureData -> {
-                device.queue.copyExternalImageToTexture(
-                    source = GPUImageCopyExternalImage(src.data),
-                    destination = GPUImageCopyTextureTagged(dst, origin = dstOrigin),
-                    copySize = size
-                )
-            }*/
-            else -> error("Invalid src data type: $src")
+            else -> copyNativeTextureData(src, dst, size, dstOrigin, device)
         }
     }
 
@@ -472,5 +467,6 @@ expect internal fun copyNativeTextureData(
     src: ImageData,
     dst: GPUTexture,
     size: Extent3D,
+    dstOrigin: GPUOrigin3D,
     device: GPUDevice
 )

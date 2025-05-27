@@ -4,6 +4,7 @@ import de.fabmax.kool.pipeline.ImageData
 import de.fabmax.kool.platform.ImageTextureData
 import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.GPUDevice
+import io.ygdrasil.webgpu.GPUOrigin3D
 import io.ygdrasil.webgpu.GPUTexture
 import io.ygdrasil.webgpu.Origin3D
 import io.ygdrasil.webgpu.Queue
@@ -18,18 +19,19 @@ internal actual fun copyNativeTextureData(
     src: ImageData,
     dst: GPUTexture,
     size: Extent3D,
+    dstOrigin: GPUOrigin3D,
     device: GPUDevice
 ): Unit = when (src) {
     // Unsupported
-    is ImageTextureData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u), device)
+    is ImageTextureData -> copyTextureData(src, dst, size, dstOrigin, device)
     else -> error("Not implemented: ${src::class.simpleName}")
 }
 
-private fun copyTextureData(
+internal fun copyTextureData(
     src: ImageTextureData,
     dst: GPUTexture,
     size: Extent3D,
-    dstOrigin: Origin3D,
+    dstOrigin: GPUOrigin3D,
     device: GPUDevice
 ) {
     val queue = (device.queue as Queue).handler

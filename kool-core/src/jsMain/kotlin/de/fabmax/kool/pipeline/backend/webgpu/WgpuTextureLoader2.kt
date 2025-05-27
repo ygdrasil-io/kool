@@ -7,6 +7,7 @@ import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.wgpu.GPUBackend
 import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureLoader
 import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureResource
+import de.fabmax.kool.pipeline.backend.wgpu.copyNativeTextureData
 import de.fabmax.kool.platform.ImageTextureData
 import de.fabmax.kool.util.Float32BufferImpl
 import de.fabmax.kool.util.Uint16BufferImpl
@@ -196,7 +197,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
     private fun copyTextureData(src: ImageData, dst: io.ygdrasil.webgpu.GPUTexture, size: Extent3D) {
         println("${src::class.simpleName} -> ${dst::class.simpleName} ${size}")
         when (src) {
-            is ImageTextureData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
+            is ImageTextureData -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u),)
             is BufferedImageData1d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData2d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
             is BufferedImageData3d -> copyTextureData(src, dst, size, Origin3D(0u, 0u, 0u))
@@ -238,13 +239,7 @@ internal class WgpuTextureLoader2(val backend: GPUBackend) {
                     size = size.toJs()
                 )
             }
-            is ImageTextureData -> {
-                device.queue.copyExternalImageToTexture(
-                    source = GPUImageCopyExternalImage(src.data),
-                    destination = GPUImageCopyTextureTagged(dst.toJs(), origin = dstOrigin.toJs()),
-                    copySize = size.toJs()
-                )
-            }
+            is ImageTextureData -> loader.copyTextureData(src, dst, size, dstOrigin)
             else -> error("Invalid src data type: $src")
         }
     }

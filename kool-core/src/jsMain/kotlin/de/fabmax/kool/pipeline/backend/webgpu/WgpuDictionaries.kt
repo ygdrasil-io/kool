@@ -245,7 +245,8 @@ class GPUImageCopyTexture(
     val mipLevel: Int = 0,
     @JsName("origin")
     val origin: IntArray = intArrayOf(0, 0, 0),
-    //aspect: GPUTextureAspect = 'all'
+    @JsName("aspect")
+    val aspect: String = "all"
 )
 
 class GPUImageCopyTextureTagged(
