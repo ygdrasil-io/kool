@@ -5,9 +5,6 @@ import de.fabmax.kool.util.*
 import io.ygdrasil.webgpu.GPUBuffer
 import io.ygdrasil.webgpu.WGPUBuffer
 
-typealias GpuBufferWgpu2 = GpuBufferWgpu
-
-
 internal class WgpuGrowingBuffer(
     val backend: RenderBackendWebGpu,
     val label: String,
@@ -18,7 +15,7 @@ internal class WgpuGrowingBuffer(
 
     var size: Long = size
         private set
-    var buffer: GpuBufferWgpu2 = makeBuffer(size)
+    var buffer: GpuBufferWgpu = makeBuffer(size)
         private set
 
     fun writeData(data: Float32Buffer) {

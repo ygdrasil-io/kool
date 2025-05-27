@@ -2,6 +2,7 @@ package de.fabmax.kool.pipeline.backend.webgpu
 
 import de.fabmax.kool.pipeline.ClearColorFill
 import de.fabmax.kool.pipeline.ClearDepthFill
+import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
 import de.fabmax.kool.util.Color
 import de.fabmax.kool.util.Float32Buffer
 import de.fabmax.kool.util.Float32BufferImpl
@@ -22,7 +23,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
         var prevColor: Color? = null
         var prevDepth = 0f
 
-        val clearValuesBuffer: GpuBufferWgpu2 = backend.createBuffer(
+        val clearValuesBuffer: GpuBufferWgpu = backend.createBuffer(
             GPUBufferDescriptor(
                 label = "clearHelper-clearValues",
                 size = 32,

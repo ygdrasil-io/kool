@@ -15,6 +15,7 @@ import de.fabmax.kool.pipeline.backend.RenderBackend
 import de.fabmax.kool.pipeline.backend.RenderBackendJs
 import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
+import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
 import de.fabmax.kool.pipeline.backend.wgpu.wgpuStorage
 import de.fabmax.kool.pipeline.backend.wgsl.WgslGenerator
 import de.fabmax.kool.platform.JsContext
@@ -325,7 +326,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
 
     private fun copyReadbacks(encoder: GPUCommandEncoder) {
         gpuReadbacks.filterIsInstance<ReadbackStorageBuffer>().forEach { readback ->
-            val gpuBuf = readback.storage.gpuBuffer as GpuBufferWgpu2?
+            val gpuBuf = readback.storage.gpuBuffer as GpuBufferWgpu?
             if (gpuBuf == null) {
                 readback.deferred.completeExceptionally(IllegalStateException("Failed reading buffer"))
             } else {
@@ -413,8 +414,8 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
     }
 
-    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu2 {
-        return GpuBufferWgpu2(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
+    fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
+        return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
     }
 
     fun createTexture(descriptor: GPUTextureDescriptor): WgpuTextureResource {

@@ -5,6 +5,7 @@ import de.fabmax.kool.pipeline.FilterMethod
 import de.fabmax.kool.pipeline.GpuPass
 import de.fabmax.kool.pipeline.TextureSampleType
 import de.fabmax.kool.pipeline.backend.GpuBindGroupData
+import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
 import de.fabmax.kool.pipeline.backend.wgsl.WgslLocations
 import de.fabmax.kool.util.*
 
@@ -129,7 +130,7 @@ class WgpuBindGroupData(
     private fun BindGroupData.StorageBufferBindingData.makeEntry(pass: GpuPass): GPUBindGroupEntry {
         val location = locations[layout]
         val storage = checkNotNull(storageBuffer) { "Cannot create storage buffer binding from null buffer" }
-        var gpuBuffer = storage.gpuBuffer as GpuBufferWgpu2?
+        var gpuBuffer = storage.gpuBuffer as GpuBufferWgpu?
         if (gpuBuffer == null) {
             gpuBuffer = backend.createBuffer(
                 GPUBufferDescriptor(
@@ -318,14 +319,14 @@ class WgpuBindGroupData(
 
     private data class BufferBinding(
         val binding: BindGroupData.UniformBufferBindingData<*>,
-        val gpuBuffer: GpuBufferWgpu2
+        val gpuBuffer: GpuBufferWgpu
     ) {
         var modCount = -1
     }
 
     private data class StorageBufferBinding(
         val binding: BindGroupData.StorageBufferBindingData,
-        val gpuBuffer: GpuBufferWgpu2
+        val gpuBuffer: GpuBufferWgpu
     )
 
     private data class TextureBinding(

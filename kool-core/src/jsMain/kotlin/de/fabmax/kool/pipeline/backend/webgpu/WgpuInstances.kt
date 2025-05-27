@@ -8,7 +8,6 @@ import de.fabmax.kool.util.checkIsNotReleased
 import io.ygdrasil.webgpu.WGPUBuffer
 
 class WgpuInstances(val instances: MeshInstanceList, val backend: RenderBackendWebGpu, mesh: Mesh) : BaseReleasable(), GpuInstances {
-    private val device: GPUDevice get() = backend.device
 
     private val createdInstanceBuffer: WgpuGrowingBuffer? = if (instances.instanceSizeF == 0) null else {
         WgpuGrowingBuffer(
