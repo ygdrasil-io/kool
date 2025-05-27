@@ -15,7 +15,9 @@ import de.fabmax.kool.pipeline.backend.RenderBackend
 import de.fabmax.kool.pipeline.backend.RenderBackendJs
 import de.fabmax.kool.pipeline.backend.gl.pxSize
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
+import de.fabmax.kool.pipeline.backend.wgpu.GPUBackend
 import de.fabmax.kool.pipeline.backend.wgpu.GpuBufferWgpu
+import de.fabmax.kool.pipeline.backend.wgpu.WgpuTextureResource
 import de.fabmax.kool.pipeline.backend.wgpu.wgpuStorage
 import de.fabmax.kool.pipeline.backend.wgsl.WgslGenerator
 import de.fabmax.kool.platform.JsContext
@@ -38,7 +40,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) : RenderBackend, RenderBackendJs {
+val RenderBackendWebGpu.oldDevice: GPUDevice
+    get() = (device as Device).handler.asDynamic()
+
+class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) : RenderBackend, RenderBackendJs, GPUBackend {
     override val name: String = "WebGPU Backend"
     override val apiName: String = "WebGPU"
     override val deviceName: String = "WebGPU"
@@ -47,8 +52,9 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
 
     lateinit var adapter: GPUAdapter
         private set
-    lateinit var device: GPUDevice
-        private set
+
+    override lateinit var device: io.ygdrasil.webgpu.GPUDevice
+
     lateinit var canvasContext: GPUCanvasContext
         private set
     private var _canvasFormat: GPUTextureFormat? = null
@@ -105,7 +111,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
         }
 
         val deviceDesc = GPUDeviceDescriptor(requiredFeatures.toTypedArray())
-        device = adapter.requestDevice(deviceDesc).await()
+        device = Device(adapter.requestDevice(deviceDesc).await().asDynamic(), null)
 
         features = BackendFeatures(
             computeShaders = true,
@@ -115,22 +121,22 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
             readWriteStorageTextures = false,
             depthOnlyShaderColorOutput = Color.BLACK,
             maxComputeWorkGroupsPerDimension = Vec3i(
-                device.limits.maxComputeWorkgroupsPerDimension,
-                device.limits.maxComputeWorkgroupsPerDimension,
-                device.limits.maxComputeWorkgroupsPerDimension,
+                oldDevice.limits.maxComputeWorkgroupsPerDimension,
+                oldDevice.limits.maxComputeWorkgroupsPerDimension,
+                oldDevice.limits.maxComputeWorkgroupsPerDimension,
             ),
             maxComputeWorkGroupSize = Vec3i(
-                device.limits.maxComputeWorkgroupSizeX,
-                device.limits.maxComputeWorkgroupSizeY,
-                device.limits.maxComputeWorkgroupSizeZ,
+                oldDevice.limits.maxComputeWorkgroupSizeX,
+                oldDevice.limits.maxComputeWorkgroupSizeY,
+                oldDevice.limits.maxComputeWorkgroupSizeZ,
             ),
-            maxComputeInvocationsPerWorkgroup = device.limits.maxComputeInvocationsPerWorkgroup,
+            maxComputeInvocationsPerWorkgroup = oldDevice.limits.maxComputeInvocationsPerWorkgroup,
         )
 
         canvasContext = canvas.getContext("webgpu") as GPUCanvasContext
         _canvasFormat = navigator.gpu.getPreferredCanvasFormat()
         canvasContext.configure(
-            GPUCanvasConfiguration(device, canvasFormat)
+            GPUCanvasConfiguration(oldDevice, canvasFormat)
         )
         textureLoader = WgpuTextureLoader(this)
         logI { "WebGPU context created" }
@@ -335,7 +341,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
                 readback.deferred.completeExceptionally(IllegalStateException("Failed reading buffer"))
             } else {
                 val size = readback.resultBuffer.limit.toLong() * 4
-                val mapBuffer = device.createBuffer(
+                val mapBuffer = oldDevice.createBuffer(
                     GPUBufferDescriptor(
                         label = "storage-buffer-readback",
                         size = size,
@@ -354,7 +360,7 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
             } else {
                 val format = readback.texture.format
                 val size = format.pxSize.toLong() * gpuTex.width * gpuTex.height * gpuTex.depth
-                val mapBuffer = device.createBuffer(
+                val mapBuffer = oldDevice.createBuffer(
                     GPUBufferDescriptor(
                         label = "texture-readback",
                         size = size,
@@ -419,11 +425,11 @@ class RenderBackendWebGpu(val ctx: KoolContext, val canvas: HTMLCanvasElement) :
     }
 
     fun createBuffer(descriptor: GPUBufferDescriptor, info: String?): GpuBufferWgpu {
-        return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(device.createBuffer(descriptor)), descriptor.size, info)
+        return GpuBufferWgpu(io.ygdrasil.webgpu.Buffer(oldDevice.createBuffer(descriptor)), descriptor.size, info)
     }
 
-    fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): OldWgpuTextureResource {
-        return OldWgpuTextureResource(descriptor, Device(device.asDynamic(), null).createTexture(descriptor))
+    override fun createTexture(descriptor: io.ygdrasil.webgpu.GPUTextureDescriptor): WgpuTextureResource {
+        return WgpuTextureResource(descriptor, device.createTexture(descriptor))
     }
 
     private interface GpuReadback

@@ -11,7 +11,7 @@ internal class WgpuGrowingBuffer(
     size: Long,
     val usage: Int = GPUBufferUsage.VERTEX or GPUBufferUsage.COPY_DST
 ) : BaseReleasable() {
-    private val device: GPUDevice get() = backend.device
+    private val device: GPUDevice get() = backend.oldDevice
 
     var size: Long = size
         private set

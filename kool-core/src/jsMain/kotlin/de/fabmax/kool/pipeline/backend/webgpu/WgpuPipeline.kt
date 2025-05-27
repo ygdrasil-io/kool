@@ -15,7 +15,7 @@ sealed class WgpuPipeline(
 
     private val pipelineInfo = PipelineInfo(pipeline)
 
-    protected val device: GPUDevice get() = backend.device
+    protected val device: GPUDevice get() = backend.oldDevice
 
     protected val locations = WgslLocations(pipeline.bindGroupLayouts, (pipeline as? DrawPipeline)?.vertexLayout)
     private val bindGroupLayouts: List<GPUBindGroupLayout> = createBindGroupLayouts()

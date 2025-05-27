@@ -21,7 +21,7 @@ abstract class WgpuRenderPass(
     private var endTimestamp: WgpuTimestamps.QuerySlot? = null
 
     protected val device: GPUDevice
-        get() = backend.device
+        get() = backend.oldDevice
 
     abstract val colorTargetFormats: List<GPUTextureFormat>
 

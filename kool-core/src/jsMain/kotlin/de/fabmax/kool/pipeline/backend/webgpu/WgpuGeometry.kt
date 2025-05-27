@@ -7,7 +7,7 @@ import de.fabmax.kool.util.checkIsNotReleased
 import io.ygdrasil.webgpu.WGPUBuffer
 
 class WgpuGeometry(val mesh: Mesh, val backend: RenderBackendWebGpu) : BaseReleasable(), GpuGeometry {
-    private val device: GPUDevice get() = backend.device
+    private val device: GPUDevice get() = backend.oldDevice
 
     private val createdIndexBuffer: WgpuGrowingBuffer
     private val createdFloatBuffer: WgpuGrowingBuffer?

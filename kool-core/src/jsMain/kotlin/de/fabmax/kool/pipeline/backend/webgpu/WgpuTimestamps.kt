@@ -8,8 +8,8 @@ import kotlin.math.max
 class WgpuTimestamps(val size: Int, val backend: RenderBackendWebGpu) {
 
     private var querySet: GPUQuerySet? = null
-    private val resolveBuffer = backend.device.createBuffer(GPUBufferDescriptor(size * 8L, GPUBufferUsage.QUERY_RESOLVE or GPUBufferUsage.COPY_SRC))
-    private val readBuffer = backend.device.createBuffer(GPUBufferDescriptor(size * 8L, GPUBufferUsage.MAP_READ or GPUBufferUsage.COPY_DST))
+    private val resolveBuffer = backend.oldDevice.createBuffer(GPUBufferDescriptor(size * 8L, GPUBufferUsage.QUERY_RESOLVE or GPUBufferUsage.COPY_SRC))
+    private val readBuffer = backend.oldDevice.createBuffer(GPUBufferDescriptor(size * 8L, GPUBufferUsage.MAP_READ or GPUBufferUsage.COPY_DST))
 
     private var isInFlight = false
     private var isMapping = false
@@ -25,7 +25,7 @@ class WgpuTimestamps(val size: Int, val backend: RenderBackendWebGpu) {
             return null
         }
         if (querySet == null) {
-            querySet = backend.device.createQuerySet(GPUQuerySetDescriptor(GPUQueryType.timestamp, size))
+            querySet = backend.oldDevice.createQuerySet(GPUQuerySetDescriptor(GPUQueryType.timestamp, size))
         }
         return querySet
     }

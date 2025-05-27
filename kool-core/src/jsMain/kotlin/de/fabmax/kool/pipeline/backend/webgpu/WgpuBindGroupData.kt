@@ -15,7 +15,7 @@ class WgpuBindGroupData(
     private val locations: WgslLocations,
     private val backend: RenderBackendWebGpu
 ) : BaseReleasable(), GpuBindGroupData {
-    private val device: GPUDevice get() = backend.device
+    private val device: GPUDevice get() = backend.oldDevice
 
     private val bufferBindings = mutableListOf<BufferBinding>()
     private val storageBufferBindings = mutableListOf<StorageBufferBinding>()
@@ -105,7 +105,7 @@ class WgpuBindGroupData(
                 }
             }
         }
-        bindGroup = backend.device.createBindGroup(
+        bindGroup = backend.oldDevice.createBindGroup(
             label = "bindGroup[${data.layout.scope}]",
             layout = gpuLayout,
             entries = bindGroupEntries.toTypedArray()

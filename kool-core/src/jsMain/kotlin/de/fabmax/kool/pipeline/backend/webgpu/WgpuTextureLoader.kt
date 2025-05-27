@@ -19,7 +19,7 @@ import org.khronos.webgl.set
 internal class WgpuTextureLoader(val backend: RenderBackendWebGpu) {
     private val loadedTextures = mutableMapOf<String, OldWgpuTextureResource>()
 
-    private val device: GPUDevice get() = backend.device
+    private val device: GPUDevice get() = backend.oldDevice
     private val multiSampledDepthTextureCopy = MultiSampledDepthTextureCopy()
     val mipmapGenerator = MipmapGenerator()
 

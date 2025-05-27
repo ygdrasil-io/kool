@@ -9,7 +9,7 @@ import de.fabmax.kool.util.Float32BufferImpl
 
 class ClearHelper(val backend: RenderBackendWebGpu) {
     private val clearPipelines = mutableMapOf<WgpuRenderPass, ClearPipeline>()
-    private val shaderModule = backend.device.createShaderModule(SHADER_SRC)
+    private val shaderModule = backend.oldDevice.createShaderModule(SHADER_SRC)
 
     fun clear(passEncoderState: RenderPassEncoderState) {
         val clearPipeline = clearPipelines.getOrPut(passEncoderState.gpuRenderPass) {
@@ -31,14 +31,14 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
             ),
             "clearHelper-clearValues"
         )
-        val bindGroupLayout = backend.device.createBindGroupLayout(arrayOf(
+        val bindGroupLayout = backend.oldDevice.createBindGroupLayout(arrayOf(
             GPUBindGroupLayoutEntryBuffer(
                 binding = 0,
                 visibility = GPUShaderStage.VERTEX or GPUShaderStage.FRAGMENT,
                 buffer = GPUBufferBindingLayout()
             )
         ))
-        val bindGroup: GPUBindGroup = backend.device.createBindGroup(bindGroupLayout, arrayOf(
+        val bindGroup: GPUBindGroup = backend.oldDevice.createBindGroup(bindGroupLayout, arrayOf(
             GPUBindGroupEntry(0, GPUBufferBinding(clearValuesBuffer.buffer.toJs()))
         ))
 
@@ -61,7 +61,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
                 clearValues.clear()
                 clearColor?.putTo(clearValues)
                 clearValues[4] = clearDepth
-                backend.device.queue.writeBuffer(clearValuesBuffer.buffer.toJs(), 0, clearValues.buffer, 0)
+                backend.oldDevice.queue.writeBuffer(clearValuesBuffer.buffer.toJs(), 0, clearValues.buffer, 0)
             }
 
             val clearPipeline = when {
@@ -81,7 +81,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
             val colorSrcFactor = if (isClearColor) GPUBlendFactor.one else GPUBlendFactor.zero
             val colorDstFactor = if (isClearColor) GPUBlendFactor.zero else GPUBlendFactor.one
 
-            return backend.device.createRenderPipeline(
+            return backend.oldDevice.createRenderPipeline(
                 GPURenderPipelineDescriptor(
                     vertex = GPUVertexState(
                         module = shaderModule,
@@ -105,7 +105,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
                         )
                     },
                     primitive = GPUPrimitiveState(topology = GPUPrimitiveTopology.triangleStrip),
-                    layout = backend.device.createPipelineLayout(GPUPipelineLayoutDescriptor(
+                    layout = backend.oldDevice.createPipelineLayout(GPUPipelineLayoutDescriptor(
                         label = "clear-pipeline-layout",
                         bindGroupLayouts = arrayOf(bindGroupLayout)
                     )),

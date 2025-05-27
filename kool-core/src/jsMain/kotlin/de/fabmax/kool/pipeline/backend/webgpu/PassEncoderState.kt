@@ -76,7 +76,7 @@ class RenderPassEncoderState(val backend: RenderBackendWebGpu): PassEncoderState
     private val bindGroups = Array<WgpuBindGroupData?>(4) { null }
 
     fun beginFrame() {
-        _encoder = backend.device.createCommandEncoder()
+        _encoder = backend.oldDevice.createCommandEncoder()
     }
 
     fun endFrame() {
@@ -85,7 +85,7 @@ class RenderPassEncoderState(val backend: RenderBackendWebGpu): PassEncoderState
         }
         val cmdBuffer = encoder.finish()
         _encoder = null
-        backend.device.queue.submit(arrayOf(cmdBuffer))
+        backend.oldDevice.queue.submit(arrayOf(cmdBuffer))
     }
 
     fun beginRenderPass(
