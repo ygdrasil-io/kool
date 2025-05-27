@@ -9,9 +9,6 @@ import io.ygdrasil.webgpu.WGPUBuffer
 class GpuBufferWgpu2(val buffer: GPUBuffer, size: Long, info: String?) :
     BaseReleasable(), GpuBufferImpl
 {
-
-    val oldBuffer: WGPUBuffer = (buffer as io.ygdrasil.webgpu.Buffer).handler
-
     private val bufferInfo = BufferInfo(buffer.label, info ?: "<none>").apply {
         allocated(size)
     }

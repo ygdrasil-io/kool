@@ -60,7 +60,7 @@ class ClearHelper(val backend: RenderBackendWebGpu) {
                 clearValues.clear()
                 clearColor?.putTo(clearValues)
                 clearValues[4] = clearDepth
-                backend.device.queue.writeBuffer(clearValuesBuffer.oldBuffer, 0, clearValues.buffer, 0)
+                backend.device.queue.writeBuffer(clearValuesBuffer.buffer.toJs(), 0, clearValues.buffer, 0)
             }
 
             val clearPipeline = when {
