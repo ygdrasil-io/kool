@@ -249,21 +249,6 @@ internal class WgpuTextureLoader(val backend: GPUBackend) {
         copyNativeTextureData(src, dst, size, dstOrigin, device)
     }
 
-    private val BufferedImageData1d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
-        val bytesPerRow = format.pxSize * width
-        return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = 1u)
-    }
-
-    private val BufferedImageData2d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
-        val bytesPerRow = format.pxSize * width
-        return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = height.toUInt())
-    }
-
-    private val BufferedImageData3d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
-        val bytesPerRow = format.pxSize * width
-        return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = height.toUInt())
-    }
-
     inner class MipmapGenerator {
         private val shaderModule = device.createShaderModule("""
             var<private> pos: array<vec2f, 4> = array<vec2f, 4>(
@@ -456,4 +441,19 @@ internal val ImageData.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
         is BufferedImageData3d -> gpuImageDataLayout
         else -> error("Invalid TextureData type: $this")
     }
+}
+
+private val BufferedImageData1d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
+    val bytesPerRow = format.pxSize * width
+    return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = 1u)
+}
+
+private val BufferedImageData2d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
+    val bytesPerRow = format.pxSize * width
+    return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = height.toUInt())
+}
+
+private val BufferedImageData3d.gpuImageDataLayout: GPUTexelCopyBufferLayout get() {
+    val bytesPerRow = format.pxSize * width
+    return TexelCopyBufferLayout(bytesPerRow = bytesPerRow.toUInt(), rowsPerImage = height.toUInt())
 }
