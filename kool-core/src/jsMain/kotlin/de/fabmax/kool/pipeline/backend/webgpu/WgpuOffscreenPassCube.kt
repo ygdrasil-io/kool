@@ -139,11 +139,11 @@ class WgpuOffscreenPassCube(
         super.endRenderPass(passEncoderState)
         attachments.resolveDepthImage?.let { copyDst ->
             backend.textureLoader.resolveMultiSampledDepthTexture(
-                src = attachments.depthImage!!.oldGpuTexture,
-                dst = copyDst.oldGpuTexture,
+                src = attachments.depthImage!!.gpuTexture,
+                dst = copyDst.gpuTexture,
                 mipLevel = passEncoderState.mipLevel,
                 layer = passEncoderState.layer,
-                encoder = passEncoderState.encoder
+                encoder = CommandEncoder(passEncoderState.encoder.asDynamic())
             )
         }
     }

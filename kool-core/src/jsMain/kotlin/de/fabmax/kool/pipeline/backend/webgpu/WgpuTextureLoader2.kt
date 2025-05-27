@@ -24,9 +24,9 @@ import org.khronos.webgl.get
 import org.khronos.webgl.set
 
 
-//internal typealias WgpuTextureLoader2 = WgpuTextureLoader
+internal typealias WgpuTextureLoader2 = WgpuTextureLoader
 
-internal class WgpuTextureLoader2(val backend: GPUBackend) {
+internal class WgpuTextureLoader3(val backend: GPUBackend) {
     val loader = WgpuTextureLoader(backend)
 
     private val device: GPUDevice get() = (backend.device as Device).handler.asDynamic()

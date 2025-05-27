@@ -4,6 +4,7 @@ import de.fabmax.kool.pipeline.*
 import de.fabmax.kool.pipeline.backend.stats.BackendStats
 import de.fabmax.kool.util.BaseReleasable
 import de.fabmax.kool.util.releaseWith
+import io.ygdrasil.webgpu.CommandEncoder
 import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.TextureDescriptor
 import kotlin.time.Duration.Companion.nanoseconds
@@ -284,7 +285,8 @@ abstract class WgpuRenderPass(
                 )
                 target.gpuTexture = copyDst
             }
-            backend.textureLoader.copyTexture2d(src.oldGpuTexture, copyDst.oldGpuTexture, parentPass.numTextureMipLevels, encoder)
+            backend.textureLoader.copyTexture2d(src.gpuTexture, copyDst.gpuTexture, parentPass.numTextureMipLevels,
+                CommandEncoder(encoder.asDynamic()))
         }
 
         override fun release() {

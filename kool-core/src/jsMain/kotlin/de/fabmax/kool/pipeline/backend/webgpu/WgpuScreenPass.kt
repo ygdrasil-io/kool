@@ -8,7 +8,9 @@ import de.fabmax.kool.pipeline.ClearDepthLoad
 import de.fabmax.kool.pipeline.FrameCopy
 import de.fabmax.kool.scene.Scene
 import de.fabmax.kool.util.launchDelayed
+import io.ygdrasil.webgpu.CommandEncoder
 import io.ygdrasil.webgpu.Extent3D
+import io.ygdrasil.webgpu.Texture
 import io.ygdrasil.webgpu.TextureDescriptor
 
 class WgpuScreenPass(backend: RenderBackendWebGpu) :
@@ -102,11 +104,13 @@ class WgpuScreenPass(backend: RenderBackendWebGpu) :
 
         } else {
             colorDstWgpu?.let { copyDst ->
-                backend.textureLoader.copyTexture2d(colorSrc, copyDst.oldGpuTexture, 1, encoder)
+                backend.textureLoader.copyTexture2d(Texture(colorSrc.asDynamic()), copyDst.gpuTexture, 1,
+                    CommandEncoder(encoder.asDynamic())
+                )
             }
         }
         depthDstWgpu?.let { copyDst ->
-            backend.textureLoader.resolveMultiSampledDepthTexture(depthAttachment!!, copyDst.oldGpuTexture, encoder)
+            backend.textureLoader.resolveMultiSampledDepthTexture(Texture(depthAttachment!!.asDynamic()), copyDst.gpuTexture, CommandEncoder(encoder.asDynamic()))
         }
     }
 
