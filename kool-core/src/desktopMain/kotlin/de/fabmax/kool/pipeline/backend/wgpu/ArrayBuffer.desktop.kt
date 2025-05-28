@@ -26,6 +26,7 @@ fun java.nio.Buffer.asArrayBuffer(block: (ArrayBuffer) -> Unit) {
         .also { block(it) }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 actual fun ArrayBuffer.asUIntArray(): UIntArray = TODO("Not yet implemented")
 
 private fun Buffer.asNioBuffer(): java.nio.Buffer = when (this) {
