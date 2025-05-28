@@ -3,8 +3,6 @@ package de.fabmax.kool.pipeline.backend.wgpu
 import de.fabmax.kool.math.float32ToFloat16
 import de.fabmax.kool.pipeline.BufferedImageData
 import de.fabmax.kool.pipeline.ImageData
-import de.fabmax.kool.pipeline.backend.webgpu.GPUImageCopyTexture
-import de.fabmax.kool.pipeline.backend.webgpu.toJs
 import de.fabmax.kool.pipeline.isF16
 import de.fabmax.kool.platform.ImageTextureData
 import de.fabmax.kool.util.Float32BufferImpl
@@ -14,7 +12,6 @@ import io.ygdrasil.webgpu.Extent3D
 import io.ygdrasil.webgpu.GPUDevice
 import io.ygdrasil.webgpu.GPUOrigin3D
 import io.ygdrasil.webgpu.GPUTexture
-import io.ygdrasil.webgpu.Origin3D
 import io.ygdrasil.webgpu.Queue
 import io.ygdrasil.webgpu.TexelCopyTextureInfo
 import io.ygdrasil.webgpu.Texture
